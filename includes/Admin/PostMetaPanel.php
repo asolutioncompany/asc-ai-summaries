@@ -80,10 +80,15 @@ class PostMetaPanel {
 
 		// Get settings to display current model
 		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
 		$ai_models = Settings::get_ai_models();
-		$selected_model = $settings['ai_model'] ?? 'none';
-		$model_label = $ai_models[$selected_model] ?? 'None (Manual)';
-		$is_manual = 'none' === $selected_model;
+		$selected_model = $settings['ai_model'] ?? $defaults['ai_model'];
+		$model_label = $ai_models[$selected_model] ?? $ai_models[$defaults['ai_model']];
+
+		$is_manual = false;
+		if ( 'none' === $selected_model ) {
+			$is_manual = true;
+		}
 
 		?>
 		<table class="form-table">
@@ -107,10 +112,10 @@ class PostMetaPanel {
 			<tr>
 				<th scope="row"></th>
 				<td>
-					<button 
-						type="button" 
-						id="asc-ais-generate-button" 
-						class="button button-primary" 
+					<button
+						type="button"
+						id="asc-ais-generate-button"
+						class="button button-primary"
 						disabled
 					>
 						<?php esc_html_e( 'Generate AI Summaries', 'asc-ai-summaries' ); ?>
@@ -122,10 +127,10 @@ class PostMetaPanel {
 					<label for="asc_ais_excerpt"><?php esc_html_e( 'AI Excerpt', 'asc-ai-summaries' ); ?></label>
 				</th>
 				<td>
-					<textarea 
-						name="asc_ais_excerpt" 
-						id="asc_ais_excerpt" 
-						rows="3" 
+					<textarea
+						name="asc_ais_excerpt"
+						id="asc_ais_excerpt"
+						rows="3"
 						class="large-text"
 						placeholder="<?php esc_attr_e( 'Enter AI-generated excerpt...', 'asc-ai-summaries' ); ?>"
 					><?php echo esc_textarea( $ai_excerpt ); ?></textarea>
@@ -139,10 +144,10 @@ class PostMetaPanel {
 					<label for="asc_ais_summary"><?php esc_html_e( 'AI Summary', 'asc-ai-summaries' ); ?></label>
 				</th>
 				<td>
-					<textarea 
-						name="asc_ais_summary" 
-						id="asc_ais_summary" 
-						rows="6" 
+					<textarea
+						name="asc_ais_summary"
+						id="asc_ais_summary"
+						rows="6"
 						class="large-text"
 						placeholder="<?php esc_attr_e( 'Enter AI-generated summary...', 'asc-ai-summaries' ); ?>"
 					><?php echo esc_textarea( $ai_summary ); ?></textarea>
@@ -191,7 +196,7 @@ class PostMetaPanel {
 			$settings = Settings::get_settings();
 			if ( ! empty( $settings['sync_ai_excerpt_to_post_excerpt'] ) && ! self::$updating_excerpt ) {
 				self::$updating_excerpt = true;
-				
+
 				// Update the post excerpt directly
 				global $wpdb;
 				$wpdb->update(
@@ -201,7 +206,7 @@ class PostMetaPanel {
 					array( '%s' ),
 					array( '%d' )
 				);
-				
+
 				clean_post_cache( $post_id );
 				self::$updating_excerpt = false;
 			}

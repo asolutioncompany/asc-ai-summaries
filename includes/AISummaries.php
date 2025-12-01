@@ -101,16 +101,6 @@ class AISummaries {
 		$settings = get_option( Admin\Admin::OPTION_NAME, array() );
 		$settings = wp_parse_args( $settings, self::$default_settings );
 
-		// Ensure post_types is an array
-		if ( ! is_array( $settings['post_types'] ) ) {
-			$settings['post_types'] = array( 'post' );
-		}
-
-		// Ensure style_settings is an array
-		if ( ! isset( $settings['style_settings'] ) || ! is_array( $settings['style_settings'] ) ) {
-			$settings['style_settings'] = array();
-		}
-
 		return $settings;
 	}
 
@@ -121,6 +111,15 @@ class AISummaries {
 	 */
 	public static function get_ai_models(): array {
 		return self::$ai_models;
+	}
+
+	/**
+	 * Get default settings.
+	 *
+	 * @return array
+	 */
+	public static function get_default_settings(): array {
+		return self::$default_settings;
 	}
 
 	/**

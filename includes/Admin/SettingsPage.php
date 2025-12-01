@@ -340,6 +340,7 @@ class SettingsPage {
 	 */
 	public function sanitize_settings( array $input ): array {
 		$sanitized = array();
+		$defaults = Settings::get_default_settings();
 
 		/*
 		 * AI model settings
@@ -351,44 +352,47 @@ class SettingsPage {
 		if ( isset( $input['ai_model'] ) && array_key_exists( $input['ai_model'], $ai_models ) ) {
 			$sanitized['ai_model'] = sanitize_text_field( $input['ai_model'] );
 		} else {
-			$sanitized['ai_model'] = 'none';
+			$sanitized['ai_model'] = $defaults['ai_model'];
 		}
 
 		// Sanitize API key (only if a ChatGPT model is selected)
 		if ( isset( $input['openai_api_key'] ) ) {
 			$sanitized['openai_api_key'] = sanitize_text_field( $input['openai_api_key'] );
 		} else {
-			$sanitized['openai_api_key'] = '';
+			$sanitized['openai_api_key'] = $defaults['openai_api_key'];
 		}
 
 		// Sanitize sync excerpt setting
-		$sanitized['sync_ai_excerpt_to_post_excerpt'] = isset( $input['sync_ai_excerpt_to_post_excerpt'] ) ? 1 : 0;
+		$sanitized['sync_ai_excerpt_to_post_excerpt'] = 0;
+		if ( isset( $input['sync_ai_excerpt_to_post_excerpt'] ) ) {
+			$sanitized['sync_ai_excerpt_to_post_excerpt'] = 1;
+		}
 
 		// Sanitize excerpt word length
 		if ( isset( $input['excerpt_word_length'] ) ) {
 			$sanitized['excerpt_word_length'] = absint( $input['excerpt_word_length'] );
 			if ( $sanitized['excerpt_word_length'] < 1 ) {
-				$sanitized['excerpt_word_length'] = Admin::DEFAULT_EXCERPT_WORD_LENGTH;
+				$sanitized['excerpt_word_length'] = $defaults['excerpt_word_length'];
 			}
 		} else {
-			$sanitized['excerpt_word_length'] = Admin::DEFAULT_EXCERPT_WORD_LENGTH;
+			$sanitized['excerpt_word_length'] = $defaults['excerpt_word_length'];
 		}
 
 		// Sanitize summary word length
 		if ( isset( $input['summary_word_length'] ) ) {
 			$sanitized['summary_word_length'] = absint( $input['summary_word_length'] );
 			if ( $sanitized['summary_word_length'] < 1 ) {
-				$sanitized['summary_word_length'] = Admin::DEFAULT_SUMMARY_WORD_LENGTH;
+				$sanitized['summary_word_length'] = $defaults['summary_word_length'];
 			}
 		} else {
-			$sanitized['summary_word_length'] = Admin::DEFAULT_SUMMARY_WORD_LENGTH;
+			$sanitized['summary_word_length'] = $defaults['summary_word_length'];
 		}
 
 		// Sanitize prose style
 		if ( isset( $input['prose_style'] ) ) {
 			$sanitized['prose_style'] = sanitize_textarea_field( $input['prose_style'] );
 		} else {
-			$sanitized['prose_style'] = '';
+			$sanitized['prose_style'] = $defaults['prose_style'];
 		}
 
 		/*
@@ -400,19 +404,26 @@ class SettingsPage {
 			$valid_post_types = array_keys( get_post_types( array( 'public' => true ) ) );
 			$sanitized['post_types'] = array_intersect( $input['post_types'], $valid_post_types );
 		} else {
-			$sanitized['post_types'] = array( 'post' );
+			$sanitized['post_types'] = $defaults['post_types'];
 		}
 
 		// Sanitize show options
-		$sanitized['show_excerpt'] = isset( $input['show_excerpt'] ) ? 1 : 0;
-		$sanitized['show_summary'] = isset( $input['show_summary'] ) ? 1 : 0;
+		$sanitized['show_excerpt'] = 0;
+		if ( isset( $input['show_excerpt'] ) ) {
+			$sanitized['show_excerpt'] = 1;
+		}
+
+		$sanitized['show_summary'] = 0;
+		if ( isset( $input['show_summary'] ) ) {
+			$sanitized['show_summary'] = 1;
+		}
 
 		// Sanitize style
 		$valid_styles = array( 'block', 'writer', 'card', 'tab' );
 		if ( isset( $input['style'] ) && in_array( $input['style'], $valid_styles, true ) ) {
 			$sanitized['style'] = sanitize_text_field( $input['style'] );
 		} else {
-			$sanitized['style'] = 'block';
+			$sanitized['style'] = $defaults['style'];
 		}
 
 		/*
@@ -421,47 +432,47 @@ class SettingsPage {
 
 		// Sanitize block margins
 		if ( isset( $input['block_margins'] ) ) {
-			$style_settings[ $style ]['block_margins'] = sanitize_text_field( $input['block_margins'] );
+			$sanitized['block_margins'] = sanitize_text_field( $input['block_margins'] );
 		} else {
-			$style_settings[ $style ]['block_margins'] = '';
+			$sanitized['block_margins'] = $defaults['block_margins'];
 		}
 
 		// Sanitize block foreground color (hex code)
 		if ( isset( $input['block_foreground_color'] ) ) {
 			$color = sanitize_text_field( $input['block_foreground_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['block_foreground_color'] = $color;
+				$sanitized['block_foreground_color'] = $color;
 			} else {
-				$style_settings[ $style ]['block_foreground_color'] = '#000000';
+				$sanitized['block_foreground_color'] = $defaults['block_foreground_color'];
 			}
 		} else {
-			$style_settings[ $style ]['block_foreground_color'] = '#000000';
+			$sanitized['block_foreground_color'] = $defaults['block_foreground_color'];
 		}
 
 		// Sanitize block background color (hex code)
 		if ( isset( $input['block_background_color'] ) ) {
 			$color = sanitize_text_field( $input['block_background_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['block_background_color'] = $color;
+				$sanitized['block_background_color'] = $color;
 			} else {
-				$style_settings[ $style ]['block_background_color'] = '#ffffff';
+				$sanitized['block_background_color'] = $defaults['block_background_color'];
 			}
 		} else {
-			$style_settings[ $style ]['block_background_color'] = '#ffffff';
+			$sanitized['block_background_color'] = $defaults['block_background_color'];
 		}
 
 		// Sanitize block excerpt title
 		if ( isset( $input['block_excerpt_title'] ) ) {
-			$style_settings[ $style ]['block_excerpt_title'] = sanitize_text_field( $input['block_excerpt_title'] );
+			$sanitized['block_excerpt_title'] = sanitize_text_field( $input['block_excerpt_title'] );
 		} else {
-			$style_settings[ $style ]['block_excerpt_title'] = '';
+			$sanitized['block_excerpt_title'] = $defaults['block_excerpt_title'];
 		}
 
 		// Sanitize block summary title
 		if ( isset( $input['block_summary_title'] ) ) {
-			$style_settings[ $style ]['block_summary_title'] = sanitize_text_field( $input['block_summary_title'] );
+			$sanitized['block_summary_title'] = sanitize_text_field( $input['block_summary_title'] );
 		} else {
-			$style_settings[ $style ]['block_summary_title'] = '';
+			$sanitized['block_summary_title'] = $defaults['block_summary_title'];
 		}
 
 		/*
@@ -470,47 +481,47 @@ class SettingsPage {
 
 		// Sanitize writer margins
 		if ( isset( $input['writer_margins'] ) ) {
-			$style_settings[ $style ]['writer_margins'] = sanitize_text_field( $input['writer_margins'] );
+			$sanitized['writer_margins'] = sanitize_text_field( $input['writer_margins'] );
 		} else {
-			$style_settings[ $style ]['writer_margins'] = '';
+			$sanitized['writer_margins'] = $defaults['writer_margins'];
 		}
 
 		// Sanitize writer foreground color (hex code)
 		if ( isset( $input['writer_foreground_color'] ) ) {
 			$color = sanitize_text_field( $input['writer_foreground_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['writer_foreground_color'] = $color;
+				$sanitized['writer_foreground_color'] = $color;
 			} else {
-				$style_settings[ $style ]['writer_foreground_color'] = '#000000';
+				$sanitized['writer_foreground_color'] = $defaults['writer_foreground_color'];
 			}
 		} else {
-			$style_settings[ $style ]['writer_foreground_color'] = '#000000';
+			$sanitized['writer_foreground_color'] = $defaults['writer_foreground_color'];
 		}
 
 		// Sanitize writer background color (hex code)
 		if ( isset( $input['writer_background_color'] ) ) {
 			$color = sanitize_text_field( $input['writer_background_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['writer_background_color'] = $color;
+				$sanitized['writer_background_color'] = $color;
 			} else {
-				$style_settings[ $style ]['writer_background_color'] = '#ffffff';
+				$sanitized['writer_background_color'] = $defaults['writer_background_color'];
 			}
 		} else {
-			$style_settings[ $style ]['writer_background_color'] = '#ffffff';
+			$sanitized['writer_background_color'] = $defaults['writer_background_color'];
 		}
 
 		// Sanitize writer excerpt title
 		if ( isset( $input['writer_excerpt_title'] ) ) {
-			$style_settings[ $style ]['writer_excerpt_title'] = sanitize_text_field( $input['block_excerpt_title'] );
+			$sanitized['writer_excerpt_title'] = sanitize_text_field( $input['writer_excerpt_title'] );
 		} else {
-			$style_settings[ $style ]['writer_excerpt_title'] = '';
+			$sanitized['writer_excerpt_title'] = $defaults['writer_excerpt_title'];
 		}
 
 		// Sanitize writer summary title
 		if ( isset( $input['writer_summary_title'] ) ) {
-			$style_settings[ $style ]['writer_summary_title'] = sanitize_text_field( $input['block_summary_title'] );
+			$sanitized['writer_summary_title'] = sanitize_text_field( $input['writer_summary_title'] );
 		} else {
-			$style_settings[ $style ]['writer_summary_title'] = '';
+			$sanitized['writer_summary_title'] = $defaults['writer_summary_title'];
 		}
 
 		/*
@@ -519,96 +530,96 @@ class SettingsPage {
 
 		// Sanitize card margins
 		if ( isset( $input['card_margins'] ) ) {
-			$style_settings[ $style ]['card_margins'] = sanitize_text_field( $input['card_margins'] );
+			$sanitized['card_margins'] = sanitize_text_field( $input['card_margins'] );
 		} else {
-			$style_settings[ $style ]['card_margins'] = '';
+			$sanitized['card_margins'] = $defaults['card_margins'];
 		}
 
 		// Sanitize card foreground color (hex code)
 		if ( isset( $input['card_foreground_color'] ) ) {
 			$color = sanitize_text_field( $input['card_foreground_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['card_foreground_color'] = $color;
+				$sanitized['card_foreground_color'] = $color;
 			} else {
-				$style_settings[ $style ]['card_foreground_color'] = '#000000';
+				$sanitized['card_foreground_color'] = $defaults['card_foreground_color'];
 			}
 		} else {
-			$style_settings[ $style ]['card_foreground_color'] = '#000000';
+			$sanitized['card_foreground_color'] = $defaults['card_foreground_color'];
 		}
 
 		// Sanitize card background color (hex code)
 		if ( isset( $input['card_background_color'] ) ) {
 			$color = sanitize_text_field( $input['card_background_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['card_background_color'] = $color;
+				$sanitized['card_background_color'] = $color;
 			} else {
-				$style_settings[ $style ]['card_background_color'] = '#ffffff';
+				$sanitized['card_background_color'] = $defaults['card_background_color'];
 			}
 		} else {
-			$style_settings[ $style ]['card_background_color'] = '#ffffff';
+			$sanitized['card_background_color'] = $defaults['card_background_color'];
 		}
 
 		// Sanitize card excerpt title
 		if ( isset( $input['card_excerpt_title'] ) ) {
-			$style_settings[ $style ]['card_excerpt_title'] = sanitize_text_field( $input['block_excerpt_title'] );
+			$sanitized['card_excerpt_title'] = sanitize_text_field( $input['card_excerpt_title'] );
 		} else {
-			$style_settings[ $style ]['card_excerpt_title'] = '';
+			$sanitized['card_excerpt_title'] = $defaults['card_excerpt_title'];
 		}
 
 		// Sanitize card summary title
 		if ( isset( $input['card_summary_title'] ) ) {
-			$style_settings[ $style ]['card_summary_title'] = sanitize_text_field( $input['block_summary_title'] );
+			$sanitized['card_summary_title'] = sanitize_text_field( $input['card_summary_title'] );
 		} else {
-			$style_settings[ $style ]['card_summary_title'] = '';
+			$sanitized['card_summary_title'] = $defaults['card_summary_title'];
 		}
 
 		/*
 		 * Tab styles
 		 */
 
-		// Sanitize card margins
+		// Sanitize tab margins
 		if ( isset( $input['tab_margins'] ) ) {
-			$style_settings[ $style ]['tab_margins'] = sanitize_text_field( $input['tab_margins'] );
+			$sanitized['tab_margins'] = sanitize_text_field( $input['tab_margins'] );
 		} else {
-			$style_settings[ $style ]['tab_margins'] = '';
+			$sanitized['tab_margins'] = $defaults['tab_margins'];
 		}
 
 		// Sanitize tab foreground color (hex code)
 		if ( isset( $input['tab_foreground_color'] ) ) {
 			$color = sanitize_text_field( $input['tab_foreground_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['tab_foreground_color'] = $color;
+				$sanitized['tab_foreground_color'] = $color;
 			} else {
-				$style_settings[ $style ]['tab_foreground_color'] = '#000000';
+				$sanitized['tab_foreground_color'] = $defaults['tab_foreground_color'];
 			}
 		} else {
-			$style_settings[ $style ]['tab_foreground_color'] = '#000000';
+			$sanitized['tab_foreground_color'] = $defaults['tab_foreground_color'];
 		}
 
 		// Sanitize tab background color (hex code)
 		if ( isset( $input['tab_background_color'] ) ) {
 			$color = sanitize_text_field( $input['tab_background_color'] );
 			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$style_settings[ $style ]['tab_background_color'] = $color;
+				$sanitized['tab_background_color'] = $color;
 			} else {
-				$style_settings[ $style ]['tab_background_color'] = '#ffffff';
+				$sanitized['tab_background_color'] = $defaults['tab_background_color'];
 			}
 		} else {
-			$style_settings[ $style ]['tab_background_color'] = '#ffffff';
+			$sanitized['tab_background_color'] = $defaults['tab_background_color'];
 		}
 
 		// Sanitize tab excerpt title
 		if ( isset( $input['tab_excerpt_title'] ) ) {
-			$style_settings[ $style ]['tab_excerpt_title'] = sanitize_text_field( $input['tab_excerpt_title'] );
+			$sanitized['tab_excerpt_title'] = sanitize_text_field( $input['tab_excerpt_title'] );
 		} else {
-			$style_settings[ $style ]['tab_excerpt_title'] = '';
+			$sanitized['tab_excerpt_title'] = $defaults['tab_excerpt_title'];
 		}
 
 		// Sanitize tab summary title
 		if ( isset( $input['tab_summary_title'] ) ) {
-			$style_settings[ $style ]['tab_summary_title'] = sanitize_text_field( $input['tab_summary_title'] );
+			$sanitized['tab_summary_title'] = sanitize_text_field( $input['tab_summary_title'] );
 		} else {
-			$style_settings[ $style ]['tab_summary_title'] = '';
+			$sanitized['tab_summary_title'] = $defaults['tab_summary_title'];
 		}
 
 		return $sanitized;
@@ -630,8 +641,9 @@ class SettingsPage {
 	 */
 	public function render_ai_model_field(): void {
 		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
 		$ai_models = Settings::get_ai_models();
-		$selected = $settings['ai_model'] ?? 'none';
+		$selected = $settings['ai_model'] ?? $defaults['ai_model'];
 
 		?>
 		<select name="<?php echo esc_attr( Admin::OPTION_NAME . '[ai_model]' ); ?>" id="asc-ais-ai-model">
@@ -651,21 +663,27 @@ class SettingsPage {
 	 */
 	public function render_api_key_field(): void {
 		$settings = Settings::get_settings();
-		$api_key  = $settings['openai_api_key'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$api_key  = $settings['openai_api_key'] ?? $defaults['openai_api_key'];
+
+		$readonly_attr = '';
+		if ( empty( $api_key ) ) {
+			$readonly_attr = 'readonly';
+		}
 
 		?>
 		<div id="asc-ais-api-key-wrapper">
-			<input 
-				type="password" 
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[openai_api_key]' ); ?>" 
-				id="asc-ais-openai-api-key" 
-				value="<?php echo esc_attr( $api_key ); ?>" 
+			<input
+				type="password"
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[openai_api_key]' ); ?>"
+				id="asc-ais-openai-api-key"
+				value="<?php echo esc_attr( $api_key ); ?>"
 				class="regular-text"
 				autocomplete="new-password"
 				data-lpignore="true"
 				data-form-type="other"
 				data-1p-ignore="true"
-				<?php echo empty( $api_key ) ? 'readonly' : ''; ?>
+				<?php echo esc_attr( $readonly_attr ); ?>
 				placeholder="<?php esc_attr_e( 'Enter your OpenAI API key', 'asc-ai-summaries' ); ?>"
 			/>
 			<button type="button" class="button" id="asc-ais-toggle-api-key" style="margin-left: 5px;">
@@ -689,14 +707,17 @@ class SettingsPage {
 	 */
 	public function render_sync_excerpt_field(): void {
 		$settings = Settings::get_settings();
-		$enabled  = isset( $settings['sync_ai_excerpt_to_post_excerpt'] ) ? (bool) $settings['sync_ai_excerpt_to_post_excerpt'] : true;
+		$enabled = true;
+		if ( isset( $settings['sync_ai_excerpt_to_post_excerpt'] ) ) {
+			$enabled = (bool) $settings['sync_ai_excerpt_to_post_excerpt'];
+		}
 
 		?>
 		<label for="asc-ais-sync-excerpt">
-			<input 
-				type="checkbox" 
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[sync_ai_excerpt_to_post_excerpt]' ); ?>" 
-				id="asc-ais-sync-excerpt" 
+			<input
+				type="checkbox"
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[sync_ai_excerpt_to_post_excerpt]' ); ?>"
+				id="asc-ais-sync-excerpt"
 				value="1"
 				<?php checked( $enabled, true ); ?>
 			/>
@@ -712,14 +733,17 @@ class SettingsPage {
 	 */
 	public function render_excerpt_word_length_field(): void {
 		$settings = Settings::get_settings();
-		$length   = isset( $settings['excerpt_word_length'] ) ? absint( $settings['excerpt_word_length'] ) : Admin::DEFAULT_EXCERPT_WORD_LENGTH;
+		$length = Admin::DEFAULT_EXCERPT_WORD_LENGTH;
+		if ( isset( $settings['excerpt_word_length'] ) ) {
+			$length = absint( $settings['excerpt_word_length'] );
+		}
 
 		?>
-		<input 
-			type="number" 
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[excerpt_word_length]' ); ?>" 
-			id="asc-ais-excerpt-word-length" 
-			value="<?php echo esc_attr( $length ); ?>" 
+		<input
+			type="number"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[excerpt_word_length]' ); ?>"
+			id="asc-ais-excerpt-word-length"
+			value="<?php echo esc_attr( $length ); ?>"
 			class="small-text"
 			min="1"
 			step="1"
@@ -743,14 +767,17 @@ class SettingsPage {
 	 */
 	public function render_summary_word_length_field(): void {
 		$settings = Settings::get_settings();
-		$length   = isset( $settings['summary_word_length'] ) ? absint( $settings['summary_word_length'] ) : Admin::DEFAULT_SUMMARY_WORD_LENGTH;
+		$length = Admin::DEFAULT_SUMMARY_WORD_LENGTH;
+		if ( isset( $settings['summary_word_length'] ) ) {
+			$length = absint( $settings['summary_word_length'] );
+		}
 
 		?>
-		<input 
-			type="number" 
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[summary_word_length]' ); ?>" 
-			id="asc-ais-summary-word-length" 
-			value="<?php echo esc_attr( $length ); ?>" 
+		<input
+			type="number"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[summary_word_length]' ); ?>"
+			id="asc-ais-summary-word-length"
+			value="<?php echo esc_attr( $length ); ?>"
 			class="small-text"
 			min="1"
 			step="1"
@@ -774,13 +801,14 @@ class SettingsPage {
 	 */
 	public function render_prose_style_field(): void {
 		$settings = Settings::get_settings();
-		$prose_style = $settings['prose_style'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$prose_style = $settings['prose_style'] ?? $defaults['prose_style'];
 
 		?>
-		<textarea 
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[prose_style]' ); ?>" 
-			id="asc-ais-prose-style" 
-			rows="3" 
+		<textarea
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[prose_style]' ); ?>"
+			id="asc-ais-prose-style"
+			rows="3"
 			class="large-text"
 			placeholder="<?php esc_attr_e( 'Describe to AI how to write your summaries', 'asc-ai-summaries' ); ?>"
 		><?php echo esc_textarea( $prose_style ); ?></textarea>
@@ -806,17 +834,21 @@ class SettingsPage {
 	 */
 	public function render_post_types_field(): void {
 		$settings   = Settings::get_settings();
+		$defaults   = Settings::get_default_settings();
 		$post_types = get_post_types( array( 'public' => true ), 'objects' );
-		$selected   = isset( $settings['post_types'] ) && is_array( $settings['post_types'] ) ? $settings['post_types'] : array( 'post' );
+		$selected = $defaults['post_types'];
+		if ( isset( $settings['post_types'] ) && is_array( $settings['post_types'] ) ) {
+			$selected = $settings['post_types'];
+		}
 
 		?>
 		<fieldset>
 			<?php foreach ( $post_types as $post_type ) : ?>
 				<label for="asc-ais-post-type-<?php echo esc_attr( $post_type->name ); ?>" style="display: block; margin-bottom: 0.5em;">
-					<input 
-						type="checkbox" 
-						name="<?php echo esc_attr( Admin::OPTION_NAME . '[post_types][]' ); ?>" 
-						id="asc-ais-post-type-<?php echo esc_attr( $post_type->name ); ?>" 
+					<input
+						type="checkbox"
+						name="<?php echo esc_attr( Admin::OPTION_NAME . '[post_types][]' ); ?>"
+						id="asc-ais-post-type-<?php echo esc_attr( $post_type->name ); ?>"
 						value="<?php echo esc_attr( $post_type->name ); ?>"
 						<?php checked( in_array( $post_type->name, $selected, true ), true ); ?>
 					/>
@@ -837,26 +869,34 @@ class SettingsPage {
 	 */
 	public function render_show_options_field(): void {
 		$settings    = Settings::get_settings();
-		$show_excerpt = isset( $settings['show_excerpt'] ) ? (bool) $settings['show_excerpt'] : false;
-		$show_summary = isset( $settings['show_summary'] ) ? (bool) $settings['show_summary'] : true;
+		$defaults    = Settings::get_default_settings();
+		$show_excerpt = (bool) $defaults['show_excerpt'];
+		if ( isset( $settings['show_excerpt'] ) ) {
+			$show_excerpt = (bool) $settings['show_excerpt'];
+		}
+
+		$show_summary = (bool) $defaults['show_summary'];
+		if ( isset( $settings['show_summary'] ) ) {
+			$show_summary = (bool) $settings['show_summary'];
+		}
 
 		?>
 		<fieldset>
 			<label for="asc-ais-show-excerpt" style="display: block; margin-bottom: 0.5em;">
-				<input 
-					type="checkbox" 
-					name="<?php echo esc_attr( Admin::OPTION_NAME . '[show_excerpt]' ); ?>" 
-					id="asc-ais-show-excerpt" 
+				<input
+					type="checkbox"
+					name="<?php echo esc_attr( Admin::OPTION_NAME . '[show_excerpt]' ); ?>"
+					id="asc-ais-show-excerpt"
 					value="1"
 					<?php checked( $show_excerpt, true ); ?>
 				/>
 				<?php esc_html_e( 'Show Excerpt', 'asc-ai-summaries' ); ?>
 			</label>
 			<label for="asc-ais-show-summary" style="display: block; margin-bottom: 0.5em;">
-				<input 
-					type="checkbox" 
-					name="<?php echo esc_attr( Admin::OPTION_NAME . '[show_summary]' ); ?>" 
-					id="asc-ais-show-summary" 
+				<input
+					type="checkbox"
+					name="<?php echo esc_attr( Admin::OPTION_NAME . '[show_summary]' ); ?>"
+					id="asc-ais-show-summary"
 					value="1"
 					<?php checked( $show_summary, true ); ?>
 				/>
@@ -876,13 +916,14 @@ class SettingsPage {
 	 */
 	public function render_style_field(): void {
 		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
 		$styles   = array(
 			'block'  => __( 'Block', 'asc-ai-summaries' ),
 			'writer' => __( 'Writer', 'asc-ai-summaries' ),
 			'card'   => __( 'Card', 'asc-ai-summaries' ),
 			'tab'    => __( 'Tab', 'asc-ai-summaries' ),
 		);
-		$selected = $settings['style'] ?? 'block';
+		$selected = $settings['style'] ?? $defaults['style'];
 
 		?>
 		<select name="<?php echo esc_attr( Admin::OPTION_NAME . '[style]' ); ?>" id="asc-ais-style">
@@ -909,7 +950,8 @@ class SettingsPage {
 	 */
 	public function render_block_margins_field(): void {
 		$settings = Settings::get_settings();
-		$margins = $settings['block_margins'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$margins = $settings['block_margins'] ?? $defaults['block_margins'];
 
 		?>
 		<div id="asc-ais-block-margins-wrapper">
@@ -935,7 +977,8 @@ class SettingsPage {
 	 */
 	public function render_block_foreground_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['block_foreground_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['block_foreground_color'] ?? $defaults['block_foreground_color'];
 
 		?>
 		<div id="asc-ais-block-foreground-color-wrapper">
@@ -963,7 +1006,8 @@ class SettingsPage {
 	 */
 	public function render_block_background_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['block_background_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['block_background_color'] ?? $defaults['block_background_color'];
 
 		?>
 		<div id="asc-ais-block-background-color-wrapper">
@@ -991,7 +1035,8 @@ class SettingsPage {
 	 */
 	public function render_block_excerpt_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['block_excerpt_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['block_excerpt_title'] ?? $defaults['block_excerpt_title'];
 
 		?>
 		<div id="asc-ais-block-excerpt-wrapper">
@@ -1017,7 +1062,8 @@ class SettingsPage {
 	 */
 	public function render_block_summary_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['block_summary_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['block_summary_title'] ?? $defaults['block_summary_title'];
 
 		?>
 		<div id="asc-ais-block-summary-wrapper">
@@ -1047,7 +1093,8 @@ class SettingsPage {
 	 */
 	public function render_writer_margins_field(): void {
 		$settings = Settings::get_settings();
-		$margins = $settings['writer_margins'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$margins = $settings['writer_margins'] ?? $defaults['writer_margins'];
 
 		?>
 		<div id="asc-ais-writer-margins-wrapper">
@@ -1073,7 +1120,8 @@ class SettingsPage {
 	 */
 	public function render_writer_foreground_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['writer_foreground_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['writer_foreground_color'] ?? $defaults['writer_foreground_color'];
 
 		?>
 		<div id="asc-ais-writer-foreground-color-wrapper">
@@ -1101,7 +1149,8 @@ class SettingsPage {
 	 */
 	public function render_writer_background_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['writer_background_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['writer_background_color'] ?? $defaults['writer_background_color'];
 
 		?>
 		<div id="asc-ais-writer-background-color-wrapper">
@@ -1129,7 +1178,8 @@ class SettingsPage {
 	 */
 	public function render_writer_excerpt_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['writer_excerpt_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['writer_excerpt_title'] ?? $defaults['writer_excerpt_title'];
 
 		?>
 		<div id="asc-ais-writer-excerpt-wrapper">
@@ -1155,7 +1205,8 @@ class SettingsPage {
 	 */
 	public function render_writer_summary_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['writer_summary_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['writer_summary_title'] ?? $defaults['writer_summary_title'];
 
 		?>
 		<div id="asc-ais-writer-summary-wrapper">
@@ -1185,7 +1236,8 @@ class SettingsPage {
 	 */
 	public function render_card_margins_field(): void {
 		$settings = Settings::get_settings();
-		$margins = $settings['card_margins'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$margins = $settings['card_margins'] ?? $defaults['card_margins'];
 
 		?>
 		<div id="asc-ais-card-margins-wrapper">
@@ -1211,7 +1263,8 @@ class SettingsPage {
 	 */
 	public function render_card_foreground_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['card_foreground_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['card_foreground_color'] ?? $defaults['card_foreground_color'];
 
 		?>
 		<div id="asc-ais-card-foreground-color-wrapper">
@@ -1239,7 +1292,8 @@ class SettingsPage {
 	 */
 	public function render_card_background_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['card_background_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['card_background_color'] ?? $defaults['card_background_color'];
 
 		?>
 		<div id="asc-ais-card-background-color-wrapper">
@@ -1267,7 +1321,8 @@ class SettingsPage {
 	 */
 	public function render_card_excerpt_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['card_excerpt_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['card_excerpt_title'] ?? $defaults['card_excerpt_title'];
 
 		?>
 		<div id="asc-ais-card-excerpt-wrapper">
@@ -1293,7 +1348,8 @@ class SettingsPage {
 	 */
 	public function render_card_summary_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['card_summary_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['card_summary_title'] ?? $defaults['card_summary_title'];
 
 		?>
 		<div id="asc-ais-card-summary-wrapper">
@@ -1323,7 +1379,8 @@ class SettingsPage {
 	 */
 	public function render_tab_margins_field(): void {
 		$settings = Settings::get_settings();
-		$margins = $settings['tab_margins'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$margins = $settings['tab_margins'] ?? $defaults['tab_margins'];
 
 		?>
 		<div id="asc-ais-tab-margins-wrapper">
@@ -1349,7 +1406,8 @@ class SettingsPage {
 	 */
 	public function render_tab_foreground_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['tab_foreground_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['tab_foreground_color'] ?? $defaults['tab_foreground_color'];
 
 		?>
 		<div id="asc-ais-tab-foreground-color-wrapper">
@@ -1377,7 +1435,8 @@ class SettingsPage {
 	 */
 	public function render_tab_background_color_field(): void {
 		$settings = Settings::get_settings();
-		$color = $settings['tab_background_color'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$color = $settings['tab_background_color'] ?? $defaults['tab_background_color'];
 
 		?>
 		<div id="asc-ais-tab-background-color-wrapper">
@@ -1405,7 +1464,8 @@ class SettingsPage {
 	 */
 	public function render_tab_excerpt_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['tab_excerpt_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['tab_excerpt_title'] ?? $defaults['tab_excerpt_title'];
 
 		?>
 		<div id="asc-ais-tab-excerpt-wrapper">
@@ -1431,7 +1491,8 @@ class SettingsPage {
 	 */
 	public function render_tab_summary_title_field(): void {
 		$settings = Settings::get_settings();
-		$title = $settings['tab_summary_title'] ?? '';
+		$defaults = Settings::get_default_settings();
+		$title = $settings['tab_summary_title'] ?? $defaults['tab_summary_title'];
 
 		?>
 		<div id="asc-ais-tab-summary-wrapper">
@@ -1543,7 +1604,7 @@ class SettingsPage {
 		?>
 		<div class="wrap asc-ais-admin">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			
+
 			<nav class="nav-tab-wrapper asc-ais-tabs">
 				<a class="nav-tab<?php echo $active_tab_class['models']; ?>" data-tab="models">
 					<?php esc_html_e( 'Models', 'asc-ai-summaries' ); ?>
@@ -1557,7 +1618,7 @@ class SettingsPage {
 				<?php
 				settings_fields( 'asc_ais_settings_group' );
 				?>
-				
+
 				<div class="asc-ais-tab-content asc-ais-models-tab"<?php echo $inactive_tab_css['models']; ?>>
 					<table class="form-table" role="presentation">
 						<tbody>
