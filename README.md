@@ -1,5 +1,4 @@
 # aS.c AI Summaries
-
 WordPress Plugin to automatically generate, style, and add AI summaries to your WordPress content
 
 ## Pre-Production / Early Development
