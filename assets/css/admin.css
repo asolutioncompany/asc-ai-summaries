@@ -1,0 +1,34 @@
+/* AI Summaries Admin Styles */
+
+.asc-ais-tabs {
+	margin: 20px 0 20px 0;
+}
+.asc-ais-tabs .nav-tab {
+	cursor: pointer;
+}
+
+.asc-ais-admin p.submit {
+	margin-top: 0;
+}
+
+.asc-ais-tab-content .form-table {
+	margin-top: 1em;
+}
+.asc-ais-tab-content .form-table tr {
+	margin-bottom: 1em;
+}
+.asc-ais-tab-content .form-table th,
+.asc-ais-tab-content .form-table td {
+	padding-bottom: 1em;
+	vertical-align: top;
+}
+.asc-ais-tab-content .form-table td p.description {
+	margin-top: 0.5em;
+	margin-bottom: 0;
+}
+.asc-ais-tab-content .form-table td input[type="text"],
+.asc-ais-tab-content .form-table td input[type="password"],
+.asc-ais-tab-content .form-table td select,
+.asc-ais-tab-content .form-table td textarea {
+	margin-bottom: 0.5em;
+}

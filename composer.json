@@ -1,0 +1,15 @@
+{
+	"name": "asolution-company/asc-ai-summaries",
+	"description": "Add AI summaries to posts as meta data with manual copy and paste or model API.",
+	"type": "wordpress-plugin",
+	"license": "GPL-3.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"ASolutionCompany\\AISummaries\\": "includes/"
+		}
+	}
+}
+
