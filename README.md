@@ -9,15 +9,17 @@ This plugin is being developed for public use as Free and Open Source Software.
 
 The initial commit includes administrative options and meta panel.
 
-It does not yet automatically generate AI summaries, style and add them to your WordPress content, nor connect to AI models.
+It does not yet automatically generate AI summaries, style them, and add them to your WordPress content, nor connect to AI models.
+
+## Benefits
+
+- Improves SEO.
+
+- Makes content more accessible to busy people.
 
 ## Planned Features
 
 Automatically generate AI summaries for all your WordPress content and a variety of customizable styles.
-
-- Improves SEO.
-
-- Helps busy people quickly read about your content.
 
 - Setup different AI models for automatic generation.
 
