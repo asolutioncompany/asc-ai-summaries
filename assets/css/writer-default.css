@@ -1,0 +1,24 @@
+--asc-ais-writer-foreground-color: #000000;
+--asc-ais-writer-background-color: #ffffff;
+
+div.asc-aid-writer-wrapper,
+div.asc-aid-writer {
+}
+
+div.asc-aid-writer-summary-wrapper {
+}
+div.asc-ais-writer-summary {
+	color: var(--asc-ais-writer-foreground-color);
+	background-color: --asc-ais-writer-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}
+
+div.asc-ais-writer-excerpt-wrapper {
+}
+div.asc-ais-writer-excerpt {
+	color: var(--asc-ais-writer-foreground-color);
+	background-color: --asc-ais-writer-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}

@@ -1,0 +1,24 @@
+--asc-ais-block-foreground-color: #000000;
+--asc-ais-block-background-color: #ffffff;
+
+div.asc-aid-block-wrapper,
+div.asc-aid-block {	
+}
+
+div.asc-aid-block-summary-wrapper {
+}
+div.asc-ais-block-summary {
+	color: var(--asc-ais-block-foreground-color);
+	background-color: --asc-ais-block-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}
+
+div.asc-ais-block-excerpt-wrapper {
+}
+div.asc-ais-block-excerpt {
+	color: var(--asc-ais-block-foreground-color);
+	background-color: --asc-ais-block-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}

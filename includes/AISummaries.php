@@ -51,24 +51,16 @@ class AISummaries {
 		'show_excerpt' => 1,
 		'show_summary' => 1,
 		'style' => 'block',
-		'block_margins' => '20px 0 20px 0',
-		'block_foreground_color' => '#000000',
-		'block_background_color' => '#ffffff',
+		'block_css' => '',
 		'block_excerpt_title' => '',
 		'block_summary_title' => 'Summary',
-		'writer_margins' => '20px 40px 40px 40px',
-		'writer_foreground_color' => '#000000',
-		'writer_background_color' => '#ffffff',
+		'writer_css' => '',
 		'writer_excerpt_title' => '',
 		'writer_summary_title' => '',
-		'card_margins' => '20px 0 40px 0',
-		'card_foreground_color' => '#000000',
-		'card_background_color' => '#ffffff',
+		'card_css' => '',
 		'card_excerpt_title' => '',
 		'card_summary_title' => 'Summary',
-		'tab_margins' => '20px 0 40px 0',
-		'tab_foreground_color' => '#000000',
-		'tab_background_color' => '#ffffff',
+		'tab_css' => '',
 		'tab_excerpt_title' => 'Excerpt',
 		'tab_summary_title' => 'Summary',
 	);
@@ -238,6 +230,7 @@ class AISummaries {
 	 */
 	public function enqueue_public_assets(): void {
 		$plugin_url = $this->get_plugin_url();
+		$plugin_path = $this->get_plugin_path();
 		$version    = self::VERSION;
 
 		// Enqueue public CSS
@@ -247,6 +240,34 @@ class AISummaries {
 			array(),
 			$version
 		);
+
+		// Enqueue style-specific CSS files
+		$styles = array( 'block', 'writer', 'card', 'tab' );
+
+		foreach ( $styles as $style ) {
+			$css_file = $plugin_path . 'assets/css/' . $style . '.css';
+			$default_css_file = $plugin_path . 'assets/css/' . $style . '-default.css';
+
+			if ( file_exists( $css_file ) ) {
+				// Enqueue user CSS file if it exists
+				wp_enqueue_style(
+					'asc_ais_' . $style . '_style',
+					$plugin_url . 'assets/css/' . $style . '.css',
+					array(),
+					filemtime( $css_file )
+				);
+			} else {
+				// Enqueue default CSS file if user file doesn't exist
+				if ( file_exists( $default_css_file ) ) {
+					wp_enqueue_style(
+						'asc_ais_' . $style . '_default_style',
+						$plugin_url . 'assets/css/' . $style . '-default.css',
+						array(),
+						filemtime( $default_css_file )
+					);
+				}
+			}
+		}
 
 		// Enqueue public JavaScript with jQuery as dependency
 		wp_enqueue_script(

@@ -1,0 +1,24 @@
+--asc-ais-card-foreground-color: #000000;
+--asc-ais-card-background-color: #ffffff;
+
+div.asc-aid-card-wrapper,
+div.asc-aid-card {
+}
+
+div.asc-aid-card-summary-wrapper {
+}
+div.asc-ais-card-summary {
+	color: var(--asc-ais-card-foreground-color);
+	background-color: --asc-ais-card-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}
+
+div.asc-ais-card-excerpt-wrapper {
+}
+div.asc-ais-card-excerpt {
+	color: var(--asc-ais-card-foreground-color);
+	background-color: --asc-ais-card-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}

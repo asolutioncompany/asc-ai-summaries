@@ -38,6 +38,9 @@ class SettingsPage {
 
 		// Register settings
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		// Override CSS settings save to add file processing
+		add_filter( 'pre_update_option_' . Admin::OPTION_NAME, array( $this, 'save_css_settings_with_files' ), 10, 2 );
 	}
 
 	/**
@@ -169,30 +172,6 @@ class SettingsPage {
 
 		// Add Block fields
 		add_settings_field(
-			'block_margins',
-			__( 'Block Margins', 'asc-ai-summaries' ),
-			array( $this, 'render_block_margins_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'block_foreground_color',
-			__( 'Block Foreground Color', 'asc-ai-summaries' ),
-			array( $this, 'render_block_foreground_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'block_background_color',
-			__( 'Block Background Color', 'asc-ai-summaries' ),
-			array( $this, 'render_block_background_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
 			'block_excerpt_title',
 			__( 'Block Excerpt Title', 'asc-ai-summaries' ),
 			array( $this, 'render_block_excerpt_title_field' ),
@@ -208,31 +187,15 @@ class SettingsPage {
 			'asc_ais_display_section'
 		);
 
+		add_settings_field(
+			'block_css',
+			__( 'Block CSS', 'asc-ai-summaries' ),
+			array( $this, 'render_block_css_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_display_section'
+		);
+
 		// Add Writer fields
-		add_settings_field(
-			'writer_margins',
-			__( 'Writer Margins', 'asc-ai-summaries' ),
-			array( $this, 'render_writer_margins_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'writer_foreground_color',
-			__( 'Writer Foreground Color', 'asc-ai-summaries' ),
-			array( $this, 'render_writer_foreground_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'writer_background_color',
-			__( 'Writer Background Color', 'asc-ai-summaries' ),
-			array( $this, 'render_writer_background_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
 		add_settings_field(
 			'writer_excerpt_title',
 			__( 'Writer Excerpt Title', 'asc-ai-summaries' ),
@@ -249,31 +212,15 @@ class SettingsPage {
 			'asc_ais_display_section'
 		);
 
+		add_settings_field(
+			'writer_css',
+			__( 'Writer CSS', 'asc-ai-summaries' ),
+			array( $this, 'render_writer_css_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_display_section'
+		);
+
 		// Add Card fields
-		add_settings_field(
-			'card_margins',
-			__( 'Card Margins', 'asc-ai-summaries' ),
-			array( $this, 'render_card_margins_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'card_foreground_color',
-			__( 'Card Foreground Color', 'asc-ai-summaries' ),
-			array( $this, 'render_card_foreground_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'card_background_color',
-			__( 'Card Background Color', 'asc-ai-summaries' ),
-			array( $this, 'render_card_background_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
 		add_settings_field(
 			'card_excerpt_title',
 			__( 'Card Excerpt Title', 'asc-ai-summaries' ),
@@ -290,31 +237,15 @@ class SettingsPage {
 			'asc_ais_display_section'
 		);
 
+		add_settings_field(
+			'card_css',
+			__( 'Card CSS', 'asc-ai-summaries' ),
+			array( $this, 'render_card_css_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_display_section'
+		);
+
 		// Add Tab fields
-		add_settings_field(
-			'tab_margins',
-			__( 'Tab Margins', 'asc-ai-summaries' ),
-			array( $this, 'render_tab_margins_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'tab_foreground_color',
-			__( 'Tab Foreground Color', 'asc-ai-summaries' ),
-			array( $this, 'render_tab_foreground_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
-		add_settings_field(
-			'tab_background_color',
-			__( 'Tab Background Color', 'asc-ai-summaries' ),
-			array( $this, 'render_tab_background_color_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_display_section'
-		);
-
 		add_settings_field(
 			'tab_excerpt_title',
 			__( 'Tab Excerpt Title', 'asc-ai-summaries' ),
@@ -327,6 +258,14 @@ class SettingsPage {
 			'tab_summary_title',
 			__( 'Tab Summary Title', 'asc-ai-summaries' ),
 			array( $this, 'render_tab_summary_title_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_display_section'
+		);
+
+		add_settings_field(
+			'tab_css',
+			__( 'Tab CSS', 'asc-ai-summaries' ),
+			array( $this, 'render_tab_css_field' ),
 			Admin::PAGE_SLUG,
 			'asc_ais_display_section'
 		);
@@ -430,35 +369,11 @@ class SettingsPage {
 		 * Block styles
 		 */
 
-		// Sanitize block margins
-		if ( isset( $input['block_margins'] ) ) {
-			$sanitized['block_margins'] = sanitize_text_field( $input['block_margins'] );
+		// Sanitize block CSS
+		if ( isset( $input['block_css'] ) ) {
+			$sanitized['block_css'] = wp_strip_all_tags( $input['block_css'] );
 		} else {
-			$sanitized['block_margins'] = $defaults['block_margins'];
-		}
-
-		// Sanitize block foreground color (hex code)
-		if ( isset( $input['block_foreground_color'] ) ) {
-			$color = sanitize_text_field( $input['block_foreground_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['block_foreground_color'] = $color;
-			} else {
-				$sanitized['block_foreground_color'] = $defaults['block_foreground_color'];
-			}
-		} else {
-			$sanitized['block_foreground_color'] = $defaults['block_foreground_color'];
-		}
-
-		// Sanitize block background color (hex code)
-		if ( isset( $input['block_background_color'] ) ) {
-			$color = sanitize_text_field( $input['block_background_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['block_background_color'] = $color;
-			} else {
-				$sanitized['block_background_color'] = $defaults['block_background_color'];
-			}
-		} else {
-			$sanitized['block_background_color'] = $defaults['block_background_color'];
+			$sanitized['block_css'] = $defaults['block_css'];
 		}
 
 		// Sanitize block excerpt title
@@ -479,35 +394,11 @@ class SettingsPage {
 		 * Writer styles
 		 */
 
-		// Sanitize writer margins
-		if ( isset( $input['writer_margins'] ) ) {
-			$sanitized['writer_margins'] = sanitize_text_field( $input['writer_margins'] );
+		// Sanitize writer CSS
+		if ( isset( $input['writer_css'] ) ) {
+			$sanitized['writer_css'] = wp_strip_all_tags( $input['writer_css'] );
 		} else {
-			$sanitized['writer_margins'] = $defaults['writer_margins'];
-		}
-
-		// Sanitize writer foreground color (hex code)
-		if ( isset( $input['writer_foreground_color'] ) ) {
-			$color = sanitize_text_field( $input['writer_foreground_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['writer_foreground_color'] = $color;
-			} else {
-				$sanitized['writer_foreground_color'] = $defaults['writer_foreground_color'];
-			}
-		} else {
-			$sanitized['writer_foreground_color'] = $defaults['writer_foreground_color'];
-		}
-
-		// Sanitize writer background color (hex code)
-		if ( isset( $input['writer_background_color'] ) ) {
-			$color = sanitize_text_field( $input['writer_background_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['writer_background_color'] = $color;
-			} else {
-				$sanitized['writer_background_color'] = $defaults['writer_background_color'];
-			}
-		} else {
-			$sanitized['writer_background_color'] = $defaults['writer_background_color'];
+			$sanitized['writer_css'] = $defaults['writer_css'];
 		}
 
 		// Sanitize writer excerpt title
@@ -528,35 +419,11 @@ class SettingsPage {
 		 * Card styles
 		 */
 
-		// Sanitize card margins
-		if ( isset( $input['card_margins'] ) ) {
-			$sanitized['card_margins'] = sanitize_text_field( $input['card_margins'] );
+		// Sanitize card CSS
+		if ( isset( $input['card_css'] ) ) {
+			$sanitized['card_css'] = wp_strip_all_tags( $input['card_css'] );
 		} else {
-			$sanitized['card_margins'] = $defaults['card_margins'];
-		}
-
-		// Sanitize card foreground color (hex code)
-		if ( isset( $input['card_foreground_color'] ) ) {
-			$color = sanitize_text_field( $input['card_foreground_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['card_foreground_color'] = $color;
-			} else {
-				$sanitized['card_foreground_color'] = $defaults['card_foreground_color'];
-			}
-		} else {
-			$sanitized['card_foreground_color'] = $defaults['card_foreground_color'];
-		}
-
-		// Sanitize card background color (hex code)
-		if ( isset( $input['card_background_color'] ) ) {
-			$color = sanitize_text_field( $input['card_background_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['card_background_color'] = $color;
-			} else {
-				$sanitized['card_background_color'] = $defaults['card_background_color'];
-			}
-		} else {
-			$sanitized['card_background_color'] = $defaults['card_background_color'];
+			$sanitized['card_css'] = $defaults['card_css'];
 		}
 
 		// Sanitize card excerpt title
@@ -577,35 +444,11 @@ class SettingsPage {
 		 * Tab styles
 		 */
 
-		// Sanitize tab margins
-		if ( isset( $input['tab_margins'] ) ) {
-			$sanitized['tab_margins'] = sanitize_text_field( $input['tab_margins'] );
+		// Sanitize tab CSS
+		if ( isset( $input['tab_css'] ) ) {
+			$sanitized['tab_css'] = wp_strip_all_tags( $input['tab_css'] );
 		} else {
-			$sanitized['tab_margins'] = $defaults['tab_margins'];
-		}
-
-		// Sanitize tab foreground color (hex code)
-		if ( isset( $input['tab_foreground_color'] ) ) {
-			$color = sanitize_text_field( $input['tab_foreground_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['tab_foreground_color'] = $color;
-			} else {
-				$sanitized['tab_foreground_color'] = $defaults['tab_foreground_color'];
-			}
-		} else {
-			$sanitized['tab_foreground_color'] = $defaults['tab_foreground_color'];
-		}
-
-		// Sanitize tab background color (hex code)
-		if ( isset( $input['tab_background_color'] ) ) {
-			$color = sanitize_text_field( $input['tab_background_color'] );
-			if ( preg_match( '/^#[0-9A-Fa-f]{6}$/', $color ) ) {
-				$sanitized['tab_background_color'] = $color;
-			} else {
-				$sanitized['tab_background_color'] = $defaults['tab_background_color'];
-			}
-		} else {
-			$sanitized['tab_background_color'] = $defaults['tab_background_color'];
+			$sanitized['tab_css'] = $defaults['tab_css'];
 		}
 
 		// Sanitize tab excerpt title
@@ -623,6 +466,60 @@ class SettingsPage {
 		}
 
 		return $sanitized;
+	}
+
+	/**
+	 * Save CSS settings with file processing.
+	 *
+	 * This method intercepts the option save to process CSS fields and save them to files,
+	 * while still allowing the normal database save to proceed.
+	 *
+	 * @param array $value The new value being saved.
+	 * @param array $old_value The previous value.
+	 * @return array The value to save (unchanged, so normal save proceeds).
+	 */
+	public function save_css_settings_with_files( array $value, array $old_value ): array {
+		$styles = array( 'block', 'writer', 'card', 'tab' );
+		$plugin_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) );
+		$css_dir = $plugin_path . 'assets/css/';
+
+		// Ensure the CSS directory exists
+		if ( ! file_exists( $css_dir ) ) {
+			wp_mkdir_p( $css_dir );
+		}
+
+		// Process each style's CSS
+		foreach ( $styles as $style ) {
+			$css_key = $style . '_css';
+			$css_content = '';
+			if ( isset( $value[$css_key] ) ) {
+				$css_content = $value[$css_key];
+			}
+
+			$css_file = $css_dir . $style . '.css';
+
+			// Save CSS to file if content exists, otherwise delete the file
+			if ( ! empty( $css_content ) ) {
+				// Save CSS content to file
+				$result = file_put_contents( $css_file, $css_content );
+				if ( false === $result ) {
+					// Log error if file write fails
+					error_log( 'Failed to write CSS file: ' . $css_file );
+				}
+			} else {
+				// If CSS is empty, delete the file if it exists
+				if ( file_exists( $css_file ) ) {
+					$result = unlink( $css_file );
+					if ( false === $result ) {
+						// Log error if file deletion fails
+						error_log( 'Failed to delete CSS file: ' . $css_file );
+					}
+				}
+			}
+		}
+
+		// Return the value unchanged so normal database save proceeds
+		return $value;
 	}
 
 	/**
@@ -944,85 +841,41 @@ class SettingsPage {
 	 */
 
 	/**
-	 * Render Block Margins field
+	 * Render Block CSS field
 	 *
 	 * @return void
 	 */
-	public function render_block_margins_field(): void {
+	public function render_block_css_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$margins = $settings['block_margins'] ?? $defaults['block_margins'];
+		$plugin_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) );
+		$css_file = $plugin_path . 'assets/css/block.css';
+		$default_css_file = $plugin_path . 'assets/css/block-default.css';
+
+		$css = '';
+		if ( file_exists( $css_file ) ) {
+			$css = file_get_contents( $css_file );
+		} else {
+			if ( file_exists( $default_css_file ) ) {
+				$css = file_get_contents( $default_css_file );
+			} else {
+				$css = $settings['block_css'] ?? $defaults['block_css'];
+			}
+		}
 
 		?>
-		<div id="asc-ais-block-margins-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[block_margins]' ); ?>"
- 				id="asc-ais-block-margins"
-				value="<?php echo esc_attr( $margins ); ?>"
-				class="regular-text"
-				placeholder="<?php esc_attr_e( 'e.g., 10px 20px', 'asc-ai-summaries' ); ?>"
-			/>
+		<div id="asc-ais-block-css-wrapper">
+			<textarea
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[block_css]' ); ?>"
+				id="asc-ais-block-css"
+				rows="10"
+				class="large-text code"
+				placeholder="<?php esc_attr_e( 'Enter custom CSS for the block style', 'asc-ai-summaries' ); ?>"
+			><?php echo esc_textarea( $css ); ?></textarea>
 			<p class="description">
-				<?php esc_html_e( 'Set margins for the summary display (CSS margin format: top right bottom left or top/bottom left/right).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Block Foreground Color field
-	 *
-	 * @return void
-	 */
-	public function render_block_foreground_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['block_foreground_color'] ?? $defaults['block_foreground_color'];
-
-		?>
-		<div id="asc-ais-block-foreground-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[block_foreground_color]' ); ?>"
- 				id="asc-ais-block-foreground-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#000000"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the foreground (text) color using a hex code (e.g., #000000).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Block Background Color field
-	 *
-	 * @return void
-	 */
-	public function render_block_background_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['block_background_color'] ?? $defaults['block_background_color'];
-
-		?>
-		<div id="asc-ais-block-background-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[block_background_color]' ); ?>"
- 				id="asc-ais-block-background-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#ffffff"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the background (text) color using a hex code (e.g., #ffffff).', 'asc-ai-summaries' ); ?>
+				<?php esc_html_e( 'Enter custom CSS for the block style. This CSS will be saved to a file and loaded on the frontend.', 'asc-ai-summaries' ); ?>
+				<br>
+				<?php esc_html_e( 'To restore defaults for the style, delete all the CSS (ctrl-a ctrl-x) for the style and save the settings. Defaults will be restored after saving the style.', 'asc-ai-summaries' ); ?>
 			</p>
 		</div>
 		<?php
@@ -1087,85 +940,41 @@ class SettingsPage {
 	 */
 
 	/**
-	 * Render Writer Margins field
+	 * Render Writer CSS field
 	 *
 	 * @return void
 	 */
-	public function render_writer_margins_field(): void {
+	public function render_writer_css_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$margins = $settings['writer_margins'] ?? $defaults['writer_margins'];
+		$plugin_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) );
+		$css_file = $plugin_path . 'assets/css/writer.css';
+		$default_css_file = $plugin_path . 'assets/css/writer-default.css';
+
+		$css = '';
+		if ( file_exists( $css_file ) ) {
+			$css = file_get_contents( $css_file );
+		} else {
+			if ( file_exists( $default_css_file ) ) {
+				$css = file_get_contents( $default_css_file );
+			} else {
+				$css = $settings['writer_css'] ?? $defaults['writer_css'];
+			}
+		}
 
 		?>
-		<div id="asc-ais-writer-margins-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[writer_margins]' ); ?>"
- 				id="asc-ais-writer-margins"
-				value="<?php echo esc_attr( $margins ); ?>"
-				class="regular-text"
-				placeholder="<?php esc_attr_e( 'e.g., 10px 20px', 'asc-ai-summaries' ); ?>"
-			/>
+		<div id="asc-ais-writer-css-wrapper">
+			<textarea
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[writer_css]' ); ?>"
+				id="asc-ais-writer-css"
+				rows="10"
+				class="large-text code"
+				placeholder="<?php esc_attr_e( 'Enter custom CSS for the writer style', 'asc-ai-summaries' ); ?>"
+			><?php echo esc_textarea( $css ); ?></textarea>
 			<p class="description">
-				<?php esc_html_e( 'Set margins for the summary display (CSS margin format: top right bottom left or top/bottom left/right).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Writer Foreground Color field
-	 *
-	 * @return void
-	 */
-	public function render_writer_foreground_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['writer_foreground_color'] ?? $defaults['writer_foreground_color'];
-
-		?>
-		<div id="asc-ais-writer-foreground-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[writer_foreground_color]' ); ?>"
- 				id="asc-ais-writer-foreground-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#000000"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the foreground (text) color using a hex code (e.g., #000000).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Writer Background Color field
-	 *
-	 * @return void
-	 */
-	public function render_writer_background_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['writer_background_color'] ?? $defaults['writer_background_color'];
-
-		?>
-		<div id="asc-ais-writer-background-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[writer_background_color]' ); ?>"
- 				id="asc-ais-writer-background-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#ffffff"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the background (text) color using a hex code (e.g., #ffffff).', 'asc-ai-summaries' ); ?>
+				<?php esc_html_e( 'Enter custom CSS for the writer style. This CSS will be saved to a file and loaded on the frontend.', 'asc-ai-summaries' ); ?>
+				<br>
+				<?php esc_html_e( 'To restore defaults for the style, delete all the CSS (ctrl-a ctrl-x) for the style and save the settings. Defaults will be restored after saving the style.', 'asc-ai-summaries' ); ?>
 			</p>
 		</div>
 		<?php
@@ -1230,85 +1039,41 @@ class SettingsPage {
 	 */
 
 	/**
-	 * Render Card Margins field
+	 * Render Card CSS field
 	 *
 	 * @return void
 	 */
-	public function render_card_margins_field(): void {
+	public function render_card_css_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$margins = $settings['card_margins'] ?? $defaults['card_margins'];
+		$plugin_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) );
+		$css_file = $plugin_path . 'assets/css/card.css';
+		$default_css_file = $plugin_path . 'assets/css/card-default.css';
+
+		$css = '';
+		if ( file_exists( $css_file ) ) {
+			$css = file_get_contents( $css_file );
+		} else {
+			if ( file_exists( $default_css_file ) ) {
+				$css = file_get_contents( $default_css_file );
+			} else {
+				$css = $settings['card_css'] ?? $defaults['card_css'];
+			}
+		}
 
 		?>
-		<div id="asc-ais-card-margins-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[card_margins]' ); ?>"
- 				id="asc-ais-card-margins"
-				value="<?php echo esc_attr( $margins ); ?>"
-				class="regular-text"
-				placeholder="<?php esc_attr_e( 'e.g., 10px 20px', 'asc-ai-summaries' ); ?>"
-			/>
+		<div id="asc-ais-card-css-wrapper">
+			<textarea
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[card_css]' ); ?>"
+				id="asc-ais-card-css"
+				rows="10"
+				class="large-text code"
+				placeholder="<?php esc_attr_e( 'Enter custom CSS for the card style', 'asc-ai-summaries' ); ?>"
+			><?php echo esc_textarea( $css ); ?></textarea>
 			<p class="description">
-				<?php esc_html_e( 'Set margins for the summary display (CSS margin format: top right bottom left or top/bottom left/right).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Card Foreground Color field
-	 *
-	 * @return void
-	 */
-	public function render_card_foreground_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['card_foreground_color'] ?? $defaults['card_foreground_color'];
-
-		?>
-		<div id="asc-ais-card-foreground-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[card_foreground_color]' ); ?>"
- 				id="asc-ais-card-foreground-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#000000"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the foreground (text) color using a hex code (e.g., #000000).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Card Background Color field
-	 *
-	 * @return void
-	 */
-	public function render_card_background_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['card_background_color'] ?? $defaults['card_background_color'];
-
-		?>
-		<div id="asc-ais-card-background-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[card_background_color]' ); ?>"
- 				id="asc-ais-card-background-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#ffffff"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the background (text) color using a hex code (e.g., #ffffff).', 'asc-ai-summaries' ); ?>
+				<?php esc_html_e( 'Enter custom CSS for the card style. This CSS will be saved to a file and loaded on the frontend.', 'asc-ai-summaries' ); ?>
+				<br>
+				<?php esc_html_e( 'To restore defaults for the style, delete all the CSS (ctrl-a ctrl-x) for the style and save the settings. Defaults will be restored after saving the style.', 'asc-ai-summaries' ); ?>
 			</p>
 		</div>
 		<?php
@@ -1373,85 +1138,41 @@ class SettingsPage {
 	 */
 
 	/**
-	 * Render Tab Margins field
+	 * Render Tab CSS field
 	 *
 	 * @return void
 	 */
-	public function render_tab_margins_field(): void {
+	public function render_tab_css_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$margins = $settings['tab_margins'] ?? $defaults['tab_margins'];
+		$plugin_path = plugin_dir_path( dirname( dirname( __FILE__ ) ) );
+		$css_file = $plugin_path . 'assets/css/tab.css';
+		$default_css_file = $plugin_path . 'assets/css/tab-default.css';
+
+		$css = '';
+		if ( file_exists( $css_file ) ) {
+			$css = file_get_contents( $css_file );
+		} else {
+			if ( file_exists( $default_css_file ) ) {
+				$css = file_get_contents( $default_css_file );
+			} else {
+				$css = $settings['tab_css'] ?? $defaults['tab_css'];
+			}
+		}
 
 		?>
-		<div id="asc-ais-tab-margins-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[tab_margins]' ); ?>"
- 				id="asc-ais-tab-margins"
-				value="<?php echo esc_attr( $margins ); ?>"
-				class="regular-text"
-				placeholder="<?php esc_attr_e( 'e.g., 10px 20px', 'asc-ai-summaries' ); ?>"
-			/>
+		<div id="asc-ais-tab-css-wrapper">
+			<textarea
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[tab_css]' ); ?>"
+				id="asc-ais-tab-css"
+				rows="10"
+				class="large-text code"
+				placeholder="<?php esc_attr_e( 'Enter custom CSS for the tab style', 'asc-ai-summaries' ); ?>"
+			><?php echo esc_textarea( $css ); ?></textarea>
 			<p class="description">
-				<?php esc_html_e( 'Set margins for the summary display (CSS margin format: top right bottom left or top/bottom left/right).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Tab Foreground Color field
-	 *
-	 * @return void
-	 */
-	public function render_tab_foreground_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['tab_foreground_color'] ?? $defaults['tab_foreground_color'];
-
-		?>
-		<div id="asc-ais-tab-foreground-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[tab_foreground_color]' ); ?>"
- 				id="asc-ais-tab-foreground-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#000000"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the foreground (text) color using a hex code (e.g., #000000).', 'asc-ai-summaries' ); ?>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render Tab Background Color field
-	 *
-	 * @return void
-	 */
-	public function render_tab_background_color_field(): void {
-		$settings = Settings::get_settings();
-		$defaults = Settings::get_default_settings();
-		$color = $settings['tab_background_color'] ?? $defaults['tab_background_color'];
-
-		?>
-		<div id="asc-ais-tab-background-color-wrapper">
-			<input
-				type="text"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[tab_background_color]' ); ?>"
- 				id="asc-ais-tab-background-color"
-				value="<?php echo esc_attr( $color ); ?>"
-				class="regular-text"
-				placeholder="#ffffff"
-				pattern="^#[0-9A-Fa-f]{6}$"
-				maxlength="7"
-			/>
-			<p class="description">
-				<?php esc_html_e( 'Set the background (text) color using a hex code (e.g., #ffffff).', 'asc-ai-summaries' ); ?>
+				<?php esc_html_e( 'Enter custom CSS for the tab style. This CSS will be saved to a file and loaded on the frontend.', 'asc-ai-summaries' ); ?>
+				<br>
+				<?php esc_html_e( 'To restore defaults for the style, delete all the CSS (ctrl-a ctrl-x) for the style and save the settings. Defaults will be restored after saving the style.', 'asc-ai-summaries' ); ?>
 			</p>
 		</div>
 		<?php

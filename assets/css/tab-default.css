@@ -1,0 +1,24 @@
+--asc-ais-tab-foreground-color: #000000;
+--asc-ais-tab-background-color: #ffffff;
+
+div.asc-aid-tab-wrapper,
+div.asc-aid-tab {
+}
+
+div.asc-aid-tab-summary-wrapper {
+}
+div.asc-ais-tab-summary {
+	color: var(--asc-ais-tab-foreground-color);
+	background-color: --asc-ais-tab-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}
+
+div.asc-ais-tab-excerpt-wrapper {
+}
+div.asc-ais-tab-excerpt {
+	color: var(--asc-ais-tab-foreground-color);
+	background-color: --asc-ais-tab-foreground-color;
+	margin: 20px 0 20px 0;
+	padding: 0;
+}
