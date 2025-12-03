@@ -755,6 +755,14 @@ class SettingsPage {
 		</fieldset>
 		<p class="description">
 			<?php esc_html_e( 'Select which post types should automatically display summaries.', 'asc-ai-summaries' ); ?>
+			<br><br>
+			<?php
+			printf(
+				/* translators: %s: Shortcode name in bold */
+				esc_html__( 'Uncheck all post types to use a shortcode. Use the shortcode %s to add the summary style selected.', 'asc-ai-summaries' ),
+				'<strong>[asc_ais_summary]</strong>'
+			);
+			?>
 		</p>
 		<?php
 	}

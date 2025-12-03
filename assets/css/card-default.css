@@ -1,24 +1,32 @@
---asc-ais-card-foreground-color: #000000;
---asc-ais-card-background-color: #ffffff;
-
-div.asc-aid-card-wrapper,
-div.asc-aid-card {
+body {
+	--asc-ais-card-color: #000000;
+	--asc-ais-card-bg-color: #f2f2f2;
 }
 
-div.asc-aid-card-summary-wrapper {
+div.asc-ais-card-wrapper {
+	margin: 20px 0 40px 0;
 }
-div.asc-ais-card-summary {
-	color: var(--asc-ais-card-foreground-color);
-	background-color: --asc-ais-card-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+div.asc-ais-card {
+	width: 100%;
 }
 
 div.asc-ais-card-excerpt-wrapper {
+	margin: 0 0 20px 0;
+}
+div.asc-ais-card-excerpt-title {
+	font-weight: bold;
 }
 div.asc-ais-card-excerpt {
-	color: var(--asc-ais-card-foreground-color);
-	background-color: --asc-ais-card-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+}
+
+div.asc-ais-card-summary-wrapper {
+	background-color: var(--asc-ais-card-bg-color);
+	border-radius: 10px;
+	padding: 20px;
+	margin: 0 0 20px 0;
+}
+div.asc-ais-card-summary-title {
+	font-weight: bold;
+}
+div.asc-ais-card-summary {
 }

@@ -54,14 +54,27 @@ class PostMetaPanel {
 	 * @return void
 	 */
 	public function add_post_meta_box(): void {
-		add_meta_box(
-			'asc_ais_meta_box',
-			__( 'AI Summaries', 'asc-ai-summaries' ),
-			array( $this, 'render_post_meta_box' ),
-			'post',
-			'normal',
-			'high'
-		);
+		// Get selected post types from settings
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$selected_post_types = $settings['post_types'] ?? $defaults['post_types'];
+
+		// Ensure we have an array
+		if ( ! is_array( $selected_post_types ) ) {
+			$selected_post_types = array();
+		}
+
+		// Add meta box for each selected post type
+		foreach ( $selected_post_types as $post_type ) {
+			add_meta_box(
+				'asc_ais_meta_box',
+				__( 'AI Summaries', 'asc-ai-summaries' ),
+				array( $this, 'render_post_meta_box' ),
+				$post_type,
+				'normal',
+				'high'
+			);
+		}
 	}
 
 	/**

@@ -56,13 +56,13 @@ class AISummaries {
 		'block_summary_title' => 'Summary',
 		'writer_css' => '',
 		'writer_excerpt_title' => '',
-		'writer_summary_title' => '',
+		'writer_summary_title' => 'Summary',
 		'card_css' => '',
 		'card_excerpt_title' => '',
 		'card_summary_title' => 'Summary',
 		'tab_css' => '',
-		'tab_excerpt_title' => 'Excerpt',
-		'tab_summary_title' => 'Summary',
+		'tab_excerpt_title' => 'Short Summary',
+		'tab_summary_title' => 'Long Summary',
 	);
 
 	/**
@@ -135,8 +135,8 @@ class AISummaries {
 			$this->init_admin();
 		}
 
-		// Initialize public functionality
-		$this->init_public();
+		// Initialize front functionality
+		$this->init_front();
 	}
 
 	/**
@@ -153,16 +153,16 @@ class AISummaries {
 	}
 
 	/**
-	 * Initialize public functionality.
+	 * Initialize front functionality.
 	 *
 	 * @return void
 	 */
-	private function init_public(): void {
-		// Enqueue public assets
+	private function init_front(): void {
+		// Enqueue front assets
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 
-		// Initialize Public class
-		new Public\Front();
+		// Initialize Front class
+		new Front\Front();
 	}
 
 	/**
@@ -233,10 +233,10 @@ class AISummaries {
 		$plugin_path = $this->get_plugin_path();
 		$version    = self::VERSION;
 
-		// Enqueue public CSS
+		// Enqueue front CSS
 		wp_enqueue_style(
 			'asc_ais_public',
-			$plugin_url . 'assets/css/public.css',
+			$plugin_url . 'assets/css/front.css',
 			array(),
 			$version
 		);
@@ -269,10 +269,10 @@ class AISummaries {
 			}
 		}
 
-		// Enqueue public JavaScript with jQuery as dependency
+		// Enqueue front JavaScript with jQuery as dependency
 		wp_enqueue_script(
 			'asc_ais_public',
-			$plugin_url . 'assets/js/public.js',
+			$plugin_url . 'assets/js/front.js',
 			array( 'jquery' ),
 			$version,
 			true

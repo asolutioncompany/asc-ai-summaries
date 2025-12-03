@@ -1,24 +1,32 @@
---asc-ais-block-foreground-color: #000000;
---asc-ais-block-background-color: #ffffff;
-
-div.asc-aid-block-wrapper,
-div.asc-aid-block {	
+body {
+	--asc-ais-block-color: #000000;
+	--asc-ais-block-bg-color: #ffffff;
 }
 
-div.asc-aid-block-summary-wrapper {
+div.asc-ais-block-wrapper {
+	margin: 20px 0 40px 0;
 }
-div.asc-ais-block-summary {
-	color: var(--asc-ais-block-foreground-color);
-	background-color: --asc-ais-block-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+div.asc-ais-block {
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--asc-ais-block-color);
+	width: 100%;
 }
 
 div.asc-ais-block-excerpt-wrapper {
+	margin: 0 0 20px 0;
+	font-size: 90%;
+}
+div.asc-ais-block-excerpt-title {
+	font-weight: bold;
 }
 div.asc-ais-block-excerpt {
-	color: var(--asc-ais-block-foreground-color);
-	background-color: --asc-ais-block-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+}
+
+div.asc-ais-block-summary-wrapper {
+	margin: 0 0 20px 0;
+}
+div.asc-ais-block-summary-title {
+	font-weight: bold;
+}
+div.asc-ais-block-summary {
 }

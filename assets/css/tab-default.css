@@ -1,24 +1,55 @@
---asc-ais-tab-foreground-color: #000000;
---asc-ais-tab-background-color: #ffffff;
-
-div.asc-aid-tab-wrapper,
-div.asc-aid-tab {
+body {
+	--asc-ais-tab-color: #000000;
+	--asc-ais-tab-bg-color: #ffffff;
+	--asc-ais-tab-inactive-color: #f2f2f2;
+	--asc-ais-tab-active-color: #ffffff;
+	--asc-ais-tab-gap: 5px;
 }
 
-div.asc-aid-tab-summary-wrapper {
+div.asc-ais-tab-wrapper {
+	margin: 20px 0 40px 0;
 }
-div.asc-ais-tab-summary {
-	color: var(--asc-ais-tab-foreground-color);
-	background-color: --asc-ais-tab-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+
+div.asc-ais-tab-bar {
+	display: flex;
+}
+div.asc-ais-tab-item {
+	cursor: pointer;
+	background-color: var(--asc-ais-tab-inactive-color);
+	opacity: 0.7;
+	border-top: 1px solid var(--asc-ais-tab-color);
+	border-left: 1px solid var(--asc-ais-tab-color);
+	border-right: 1px solid var(--asc-ais-tab-color);
+	border-bottom: 1px solid var(--asc-ais-tab-color);
+	padding: 5px 20px 5px 20px;
+	margin-right: var(--asc-ais-tab-gap);
+	margin-bottom: -1px;
+}
+div.asc-ais-tab-item.asc-ais-tab-item-active {
+	background-color: var(--asc-ais-tab-active-color);
+	border-bottom: 1px solid var(--asc-ais-tab-bg-color);
+}
+
+div.asc-ais-tab {
+	border: 1px solid var(--asc-ais-tab-color);
+	width: 100%;
+	padding: 0 20px 0 20px;
 }
 
 div.asc-ais-tab-excerpt-wrapper {
+	margin: 0 0 20px 0;
+}
+div.asc-ais-tab-excerpt-title {
+	font-weight: bold;
 }
 div.asc-ais-tab-excerpt {
-	color: var(--asc-ais-tab-foreground-color);
-	background-color: --asc-ais-tab-foreground-color;
-	margin: 20px 0 20px 0;
-	padding: 0;
+}
+
+div.asc-ais-tab-summary-wrapper {
+	margin: 0 0 20px 0;
+}
+div.asc-ais-tab-summary-title {
+	font-weight: bold;
+}
+div.asc-ais-tab-summary {
 }

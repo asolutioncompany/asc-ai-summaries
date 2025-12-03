@@ -36,14 +36,14 @@ class Admin {
 	 *
 	 * @var int
 	 */
-	const DEFAULT_EXCERPT_WORD_LENGTH = 30;
+	const DEFAULT_EXCERPT_WORD_LENGTH = 25;
 
 	/**
 	 * Default summary word length.
 	 *
 	 * @var int
 	 */
-	const DEFAULT_SUMMARY_WORD_LENGTH = 60;
+	const DEFAULT_SUMMARY_WORD_LENGTH = 75;
 
 	/**
 	 * Settings page instance.
