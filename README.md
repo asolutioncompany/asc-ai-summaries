@@ -10,9 +10,9 @@ This plugin is not ready for production use and is in early development.
 
 This plugin is being developed for public use as Free and Open Source Software.
 
-The initial commit includes administrative options and meta panel.
+Administrative options, meta panel, display of styled summaries, and shortcode implementation are completed.
 
-It does not yet automatically generate AI summaries, style them, and add them to your WordPress content, nor connect to AI models.
+It does not yet automatically generate AI summaries nor connect to AI models.
 
 ## Planned Features
 
@@ -29,3 +29,5 @@ Automatically generate AI summaries for all your WordPress content and a variety
 - Select from multiple AI models or perform manual copy and paste
 
 - Select from multiple styles with fully exposed CSS for full customization
+
+- Optionally use a shortcode to add summaries to the front
