@@ -90,11 +90,35 @@ class SettingsPage {
 			'asc_ais_main_section'
 		);
 
-		// Add API Key field
+		// Add API Key fields (ordered to match model dropdown order)
+		add_settings_field(
+			'huggingface_api_key',
+			__( 'Hugging Face API Key', 'asc-ai-summaries' ),
+			array( $this, 'render_huggingface_api_key_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_main_section'
+		);
+
 		add_settings_field(
 			'openai_api_key',
 			__( 'OpenAI API Key', 'asc-ai-summaries' ),
-			array( $this, 'render_api_key_field' ),
+			array( $this, 'render_openai_api_key_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_main_section'
+		);
+
+		add_settings_field(
+			'anthropic_api_key',
+			__( 'Anthropic API Key', 'asc-ai-summaries' ),
+			array( $this, 'render_anthropic_api_key_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_main_section'
+		);
+
+		add_settings_field(
+			'google_api_key',
+			__( 'Google API Key', 'asc-ai-summaries' ),
+			array( $this, 'render_google_api_key_field' ),
 			Admin::PAGE_SLUG,
 			'asc_ais_main_section'
 		);
@@ -108,29 +132,20 @@ class SettingsPage {
 			'asc_ais_main_section'
 		);
 
-		// Add Excerpt Word Length field
+		// Add Excerpt Prompt field
 		add_settings_field(
-			'excerpt_word_length',
-			__( 'Excerpt Word Length', 'asc-ai-summaries' ),
-			array( $this, 'render_excerpt_word_length_field' ),
+			'excerpt_prompt',
+			__( 'Excerpt Prompt', 'asc-ai-summaries' ),
+			array( $this, 'render_excerpt_prompt_field' ),
 			Admin::PAGE_SLUG,
 			'asc_ais_main_section'
 		);
 
-		// Add Summary Word Length field
+		// Add Summary Prompt field
 		add_settings_field(
-			'summary_word_length',
-			__( 'Summary Word Length', 'asc-ai-summaries' ),
-			array( $this, 'render_summary_word_length_field' ),
-			Admin::PAGE_SLUG,
-			'asc_ais_main_section'
-		);
-
-		// Add Prose Style field
-		add_settings_field(
-			'prose_style',
-			__( 'Prose Style', 'asc-ai-summaries' ),
-			array( $this, 'render_prose_style_field' ),
+			'summary_prompt',
+			__( 'Summary Prompt', 'asc-ai-summaries' ),
+			array( $this, 'render_summary_prompt_field' ),
 			Admin::PAGE_SLUG,
 			'asc_ais_main_section'
 		);
@@ -294,11 +309,29 @@ class SettingsPage {
 			$sanitized['ai_model'] = $defaults['ai_model'];
 		}
 
-		// Sanitize API key (only if a ChatGPT model is selected)
+		// Sanitize API keys
 		if ( isset( $input['openai_api_key'] ) ) {
 			$sanitized['openai_api_key'] = sanitize_text_field( $input['openai_api_key'] );
 		} else {
 			$sanitized['openai_api_key'] = $defaults['openai_api_key'];
+		}
+
+		if ( isset( $input['huggingface_api_key'] ) ) {
+			$sanitized['huggingface_api_key'] = sanitize_text_field( $input['huggingface_api_key'] );
+		} else {
+			$sanitized['huggingface_api_key'] = $defaults['huggingface_api_key'];
+		}
+
+		if ( isset( $input['anthropic_api_key'] ) ) {
+			$sanitized['anthropic_api_key'] = sanitize_text_field( $input['anthropic_api_key'] );
+		} else {
+			$sanitized['anthropic_api_key'] = $defaults['anthropic_api_key'];
+		}
+
+		if ( isset( $input['google_api_key'] ) ) {
+			$sanitized['google_api_key'] = sanitize_text_field( $input['google_api_key'] );
+		} else {
+			$sanitized['google_api_key'] = $defaults['google_api_key'];
 		}
 
 		// Sanitize sync excerpt setting
@@ -307,31 +340,18 @@ class SettingsPage {
 			$sanitized['sync_ai_excerpt_to_post_excerpt'] = 1;
 		}
 
-		// Sanitize excerpt word length
-		if ( isset( $input['excerpt_word_length'] ) ) {
-			$sanitized['excerpt_word_length'] = absint( $input['excerpt_word_length'] );
-			if ( $sanitized['excerpt_word_length'] < 1 ) {
-				$sanitized['excerpt_word_length'] = $defaults['excerpt_word_length'];
-			}
+		// Sanitize excerpt prompt
+		if ( isset( $input['excerpt_prompt'] ) ) {
+			$sanitized['excerpt_prompt'] = sanitize_textarea_field( $input['excerpt_prompt'] );
 		} else {
-			$sanitized['excerpt_word_length'] = $defaults['excerpt_word_length'];
+			$sanitized['excerpt_prompt'] = $defaults['excerpt_prompt'];
 		}
 
-		// Sanitize summary word length
-		if ( isset( $input['summary_word_length'] ) ) {
-			$sanitized['summary_word_length'] = absint( $input['summary_word_length'] );
-			if ( $sanitized['summary_word_length'] < 1 ) {
-				$sanitized['summary_word_length'] = $defaults['summary_word_length'];
-			}
+		// Sanitize summary prompt
+		if ( isset( $input['summary_prompt'] ) ) {
+			$sanitized['summary_prompt'] = sanitize_textarea_field( $input['summary_prompt'] );
 		} else {
-			$sanitized['summary_word_length'] = $defaults['summary_word_length'];
-		}
-
-		// Sanitize prose style
-		if ( isset( $input['prose_style'] ) ) {
-			$sanitized['prose_style'] = sanitize_textarea_field( $input['prose_style'] );
-		} else {
-			$sanitized['prose_style'] = $defaults['prose_style'];
+			$sanitized['summary_prompt'] = $defaults['summary_prompt'];
 		}
 
 		/*
@@ -539,7 +559,7 @@ class SettingsPage {
 	public function render_ai_model_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$ai_models = Settings::get_ai_models();
+		$ai_models = Settings::get_ai_models_labels();
 		$selected = $settings['ai_model'] ?? $defaults['ai_model'];
 
 		?>
@@ -554,46 +574,124 @@ class SettingsPage {
 	}
 
 	/**
-	 * Render API Key field.
+	 * Render OpenAI API Key field.
 	 *
 	 * @return void
 	 */
-	public function render_api_key_field(): void {
+	public function render_openai_api_key_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
 		$api_key  = $settings['openai_api_key'] ?? $defaults['openai_api_key'];
 
-		$readonly_attr = '';
-		if ( empty( $api_key ) ) {
-			$readonly_attr = 'readonly';
-		}
+		?>
+		<input
+			type="password"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[openai_api_key]' ); ?>"
+			id="asc-ais-openai-api-key"
+			value="<?php echo esc_attr( $api_key ); ?>"
+			class="regular-text"
+			autocomplete="new-password"
+			placeholder="<?php esc_attr_e( 'Enter your OpenAI API key', 'asc-ai-summaries' ); ?>"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Enter your OpenAI API key. This is required when using OpenAI models.', 'asc-ai-summaries' ); ?>
+			<br>
+			<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Get your API key from OpenAI', 'asc-ai-summaries' ); ?>
+			</a>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Hugging Face API Key field.
+	 *
+	 * @return void
+	 */
+	public function render_huggingface_api_key_field(): void {
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$api_key  = $settings['huggingface_api_key'] ?? $defaults['huggingface_api_key'];
 
 		?>
-		<div id="asc-ais-api-key-wrapper">
-			<input
-				type="password"
-				name="<?php echo esc_attr( Admin::OPTION_NAME . '[openai_api_key]' ); ?>"
-				id="asc-ais-openai-api-key"
-				value="<?php echo esc_attr( $api_key ); ?>"
-				class="regular-text"
-				autocomplete="new-password"
-				data-lpignore="true"
-				data-form-type="other"
-				data-1p-ignore="true"
-				<?php echo esc_attr( $readonly_attr ); ?>
-				placeholder="<?php esc_attr_e( 'Enter your OpenAI API key', 'asc-ai-summaries' ); ?>"
-			/>
-			<button type="button" class="button" id="asc-ais-toggle-api-key" style="margin-left: 5px;">
-				<?php esc_html_e( 'Show', 'asc-ai-summaries' ); ?>
-			</button>
-			<p class="description">
-				<?php esc_html_e( 'Enter your OpenAI API key. This is required when using ChatGPT models.', 'asc-ai-summaries' ); ?>
-				<br>
-				<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'Get your API key from OpenAI', 'asc-ai-summaries' ); ?>
-				</a>
-			</p>
-		</div>
+		<input
+			type="password"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[huggingface_api_key]' ); ?>"
+			id="asc-ais-huggingface-api-key"
+			value="<?php echo esc_attr( $api_key ); ?>"
+			class="regular-text"
+			autocomplete="new-password"
+			placeholder="<?php esc_attr_e( 'Enter your Hugging Face API key', 'asc-ai-summaries' ); ?>"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Enter your Hugging Face API key. This is required when using Hugging Face models.', 'asc-ai-summaries' ); ?>
+			<br>
+			<?php esc_html_e( 'You need to create a fine-grained token with the "make calls to inference providers" permission.', 'asc-ai-summaries' ); ?>
+			<br>
+			<a href="https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Create your fine-grained API token', 'asc-ai-summaries' ); ?>
+			</a>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Anthropic API Key field.
+	 *
+	 * @return void
+	 */
+	public function render_anthropic_api_key_field(): void {
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$api_key  = $settings['anthropic_api_key'] ?? $defaults['anthropic_api_key'];
+
+		?>
+		<input
+			type="password"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[anthropic_api_key]' ); ?>"
+			id="asc-ais-anthropic-api-key"
+			value="<?php echo esc_attr( $api_key ); ?>"
+			class="regular-text"
+			autocomplete="new-password"
+			placeholder="<?php esc_attr_e( 'Enter your Anthropic API key', 'asc-ai-summaries' ); ?>"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Enter your Anthropic API key. This is required when using Anthropic models.', 'asc-ai-summaries' ); ?>
+			<br>
+			<a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Get your API key from Anthropic', 'asc-ai-summaries' ); ?>
+			</a>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Google API Key field.
+	 *
+	 * @return void
+	 */
+	public function render_google_api_key_field(): void {
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$api_key  = $settings['google_api_key'] ?? $defaults['google_api_key'];
+
+		?>
+		<input
+			type="password"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[google_api_key]' ); ?>"
+			id="asc-ais-google-api-key"
+			value="<?php echo esc_attr( $api_key ); ?>"
+			class="regular-text"
+			autocomplete="new-password"
+			placeholder="<?php esc_attr_e( 'Enter your Google API key', 'asc-ai-summaries' ); ?>"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Enter your Google API key. This is required when using Google models.', 'asc-ai-summaries' ); ?>
+			<br>
+			<a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer">
+				<?php esc_html_e( 'Get your API key from Google', 'asc-ai-summaries' ); ?>
+			</a>
+		</p>
 		<?php
 	}
 
@@ -624,93 +722,49 @@ class SettingsPage {
 	}
 
 	/**
-	 * Render Excerpt Word Length field.
+	 * Render Excerpt Prompt field.
 	 *
 	 * @return void
 	 */
-	public function render_excerpt_word_length_field(): void {
-		$settings = Settings::get_settings();
-		$length = Admin::DEFAULT_EXCERPT_WORD_LENGTH;
-		if ( isset( $settings['excerpt_word_length'] ) ) {
-			$length = absint( $settings['excerpt_word_length'] );
-		}
-
-		?>
-		<input
-			type="number"
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[excerpt_word_length]' ); ?>"
-			id="asc-ais-excerpt-word-length"
-			value="<?php echo esc_attr( $length ); ?>"
-			class="small-text"
-			min="1"
-			step="1"
-		/>
-		<p class="description">
-			<?php
-			printf(
-				/* translators: %d: Default excerpt word length */
-				esc_html__( 'Maximum number of words for the AI-generated excerpt. Default is %d words.', 'asc-ai-summaries' ),
-				Admin::DEFAULT_EXCERPT_WORD_LENGTH
-			);
-			?>
-		</p>
-		<?php
-	}
-
-	/**
-	 * Render Summary Word Length field.
-	 *
-	 * @return void
-	 */
-	public function render_summary_word_length_field(): void {
-		$settings = Settings::get_settings();
-		$length = Admin::DEFAULT_SUMMARY_WORD_LENGTH;
-		if ( isset( $settings['summary_word_length'] ) ) {
-			$length = absint( $settings['summary_word_length'] );
-		}
-
-		?>
-		<input
-			type="number"
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[summary_word_length]' ); ?>"
-			id="asc-ais-summary-word-length"
-			value="<?php echo esc_attr( $length ); ?>"
-			class="small-text"
-			min="1"
-			step="1"
-		/>
-		<p class="description">
-			<?php
-			printf(
-				/* translators: %d: Default summary word length */
-				esc_html__( 'Maximum number of words for the AI-generated summary. Default is %d words.', 'asc-ai-summaries' ),
-				Admin::DEFAULT_SUMMARY_WORD_LENGTH
-			);
-			?>
-		</p>
-		<?php
-	}
-
-	/**
-	 * Render Prose Style field.
-	 *
-	 * @return void
-	 */
-	public function render_prose_style_field(): void {
+	public function render_excerpt_prompt_field(): void {
 		$settings = Settings::get_settings();
 		$defaults = Settings::get_default_settings();
-		$prose_style = $settings['prose_style'] ?? $defaults['prose_style'];
+		$excerpt_prompt = $settings['excerpt_prompt'] ?? $defaults['excerpt_prompt'];
 
 		?>
 		<textarea
-			name="<?php echo esc_attr( Admin::OPTION_NAME . '[prose_style]' ); ?>"
-			id="asc-ais-prose-style"
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[excerpt_prompt]' ); ?>"
+			id="asc-ais-excerpt-prompt"
 			rows="3"
 			class="large-text"
-			placeholder="<?php esc_attr_e( 'Describe to AI how to write your summaries', 'asc-ai-summaries' ); ?>"
-		><?php echo esc_textarea( $prose_style ); ?></textarea>
+			placeholder="<?php esc_attr_e( 'Enter the prompt for generating excerpts', 'asc-ai-summaries' ); ?>"
+		><?php echo esc_textarea( $excerpt_prompt ); ?></textarea>
 		<p class="description">
-			<?php esc_html_e( 'Describe to AI how to write your summaries. As an example, "Write the summary in the style of the article."', 'asc-ai-summaries' ); ?>
+			<?php esc_html_e( 'Customize the prompt for generating excerpts. The article content will be appended to this prompt.', 'asc-ai-summaries' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Summary Prompt field.
+	 *
+	 * @return void
+	 */
+	public function render_summary_prompt_field(): void {
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$summary_prompt = $settings['summary_prompt'] ?? $defaults['summary_prompt'];
+
+		?>
+		<textarea
+			name="<?php echo esc_attr( Admin::OPTION_NAME . '[summary_prompt]' ); ?>"
+			id="asc-ais-summary-prompt"
+			rows="3"
+			class="large-text"
+			placeholder="<?php esc_attr_e( 'Enter the prompt for generating summaries', 'asc-ai-summaries' ); ?>"
+		><?php echo esc_textarea( $summary_prompt ); ?></textarea>
+		<p class="description">
+			<?php esc_html_e( 'Customize the prompt for generating summaries. The article content will be appended to this prompt.', 'asc-ai-summaries' ); ?>
 		</p>
 		<?php
 	}
