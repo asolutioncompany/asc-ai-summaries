@@ -30,9 +30,76 @@ class AISummaries {
 	 * @var array
 	 */
 	private static array $ai_models = array(
-		'none' => 'None (Manual)',
-		'gpt-5-mini' => 'ChatGPT 5 Mini (gpt-5-mini)',
-		'gpt-5-nano' => 'ChatGPT 5 Nano (gpt-5-nano)',
+		'none' => array(
+			'label' => 'None (Manual)',
+			'provider' => 'none',
+			'model' => '',
+		),
+		'huggingface-open-ai-gpt-oss-20b' => array(
+			'label' => 'Hugging Face (openai/gpt-oss-20b)',
+			'provider' => 'huggingface',
+			'model' => 'openai/gpt-oss-20b',
+		),
+		'huggingface-open-ai-gpt-oss-120b' => array(
+			'label' => 'Hugging Face (openai/gpt-oss-120b)',
+			'provider' => 'huggingface',
+			'model' => 'openai/gpt-oss-120b',
+		),
+		'openai-gpt-5-nano' => array(
+			'label' => 'OpenAI (gpt-5-nano)',
+			'provider' => 'openai',
+			'model' => 'gpt-5-nano',
+		),
+		'openai-gpt-5-mini' => array(
+			'label' => 'OpenAI (gpt-5-mini)',
+			'provider' => 'openai',
+			'model' => 'gpt-5-mini',
+		),
+		'openai-gpt-5' => array(
+			'label' => 'OpenAI (gpt-5)',
+			'provider' => 'openai',
+			'model' => 'gpt-5',
+		),
+		'anthropic-haiku-3' => array(
+			'label' => 'Anthropic (claude-haiku-3)',
+			'provider' => 'openai',
+			'model' => 'haiku-3',
+		),
+		'anthropic-haiku-3.5' => array(
+			'label' => 'Anthropic (claude-haiku-3.5)',
+			'provider' => 'openai',
+			'model' => 'haiku-3.5',
+		),
+		'anthropic-haiku-4.5' => array(
+			'label' => 'Anthropic (claude-haiku-4.5)',
+			'provider' => 'openai',
+			'model' => 'haiku-4.5',
+		),
+		'anthropic-sonnet-4.5' => array(
+			'label' => 'Anthropic (claude-sonnet-4.5)',
+			'provider' => 'openai',
+			'model' => 'sonnet-4',
+		),
+		'google-gemma-3' => array(
+			'label' => 'Google (gemma-3)',
+			'provider' => 'google',
+			'model' => 'gemma-3',
+		),
+		'google-gemini-2.5-flash-lite' => array(
+			'label' => 'Google (gemini-2.5-flash-lite)',
+			'provider' => 'google',
+			'model' => 'gemini-2.5-flash-lite',
+		),
+		'google-gemini-2.5-flash' => array(
+			'label' => 'Google (gemini-2.5-flash)',
+			'provider' => 'google',
+			'model' => 'gemini-2.5-flash',
+		),
+		'google-gemini-2.5-pro' => array(
+			'label' => 'Google (gemini-2.5-pro)',
+			'provider' => 'google',
+			'model' => 'gemini-2.5-pro',
+		),
 	);
 
 	/**
@@ -42,11 +109,13 @@ class AISummaries {
 	 */
 	private static array $default_settings = array(
 		'ai_model' => 'none',
+		'huggingface_api_key' => '',
 		'openai_api_key' => '',
+		'anthropic_api_key' => '',
+		'google_api_key' => '',
 		'sync_ai_excerpt_to_post_excerpt' => 1,
-		'excerpt_word_length' => Admin\Admin::DEFAULT_EXCERPT_WORD_LENGTH,
-		'summary_word_length' => Admin\Admin::DEFAULT_SUMMARY_WORD_LENGTH,
-		'prose_style' => 'Write the summary in the style of the article.',
+		'excerpt_prompt' => 'Write 30 word excerpt of this article:',
+		'summary_prompt' => 'Write 90 word summary of this article:',
 		'post_types' => array( 'post' ),
 		'show_excerpt' => 1,
 		'show_summary' => 1,
@@ -99,10 +168,33 @@ class AISummaries {
 	/**
 	 * Get available AI models.
 	 *
-	 * @return array
+	 * @return array Array of model slugs => model data objects.
 	 */
 	public static function get_ai_models(): array {
 		return self::$ai_models;
+	}
+
+	/**
+	 * Get AI models as a simple key => label array for dropdowns.
+	 *
+	 * @return array Array of model slugs => labels.
+	 */
+	public static function get_ai_models_labels(): array {
+		$labels = array();
+		foreach ( self::$ai_models as $slug => $model_data ) {
+			$labels[ $slug ] = $model_data['label'];
+		}
+		return $labels;
+	}
+
+	/**
+	 * Get model data by slug.
+	 *
+	 * @param string $slug The model slug.
+	 * @return array|null Model data or null if not found.
+	 */
+	public static function get_model_data( string $slug ): ?array {
+		return self::$ai_models[ $slug ] ?? null;
 	}
 
 	/**
@@ -220,6 +312,21 @@ class AISummaries {
 			array( 'jquery' ),
 			$version,
 			true
+		);
+
+		// Localize script for AJAX
+		wp_localize_script(
+			'asc_ais_admin',
+			'ascAISummaries',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce' => wp_create_nonce( 'asc_ais_generate_summaries' ),
+				'i18n' => array(
+					'generating' => __( 'Generating...', 'asc-ai-summaries' ),
+					'success' => __( 'Success!', 'asc-ai-summaries' ),
+					'error' => __( 'An error occurred.', 'asc-ai-summaries' ),
+				),
+			)
 		);
 	}
 
