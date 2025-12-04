@@ -32,20 +32,6 @@ class Admin {
 	const OPTION_NAME = 'asc_ais_settings';
 
 	/**
-	 * Default excerpt word length.
-	 *
-	 * @var int
-	 */
-	const DEFAULT_EXCERPT_WORD_LENGTH = 25;
-
-	/**
-	 * Default summary word length.
-	 *
-	 * @var int
-	 */
-	const DEFAULT_SUMMARY_WORD_LENGTH = 75;
-
-	/**
 	 * Settings page instance.
 	 *
 	 * @var SettingsPage|null
