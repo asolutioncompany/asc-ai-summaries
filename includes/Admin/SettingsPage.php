@@ -176,6 +176,15 @@ class SettingsPage {
 			'asc_ais_display_section'
 		);
 
+		// Add Show on Non-Singular field
+		add_settings_field(
+			'show_on_non_singular',
+			__( 'Show on Archive Pages', 'asc-ai-summaries' ),
+			array( $this, 'render_show_on_non_singular_field' ),
+			Admin::PAGE_SLUG,
+			'asc_ais_display_section'
+		);
+
 		// Add Style field
 		add_settings_field(
 			'style',
@@ -375,6 +384,12 @@ class SettingsPage {
 		$sanitized['show_summary'] = 0;
 		if ( isset( $input['show_summary'] ) ) {
 			$sanitized['show_summary'] = 1;
+		}
+
+		// Sanitize show on non-singular
+		$sanitized['show_on_non_singular'] = 0;
+		if ( isset( $input['show_on_non_singular'] ) ) {
+			$sanitized['show_on_non_singular'] = 1;
 		}
 
 		// Sanitize style
@@ -864,6 +879,38 @@ class SettingsPage {
 		</fieldset>
 		<p class="description">
 			<?php esc_html_e( 'Select what content to display.', 'asc-ai-summaries' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Show on Non-Singular field.
+	 *
+	 * @return void
+	 */
+	public function render_show_on_non_singular_field(): void {
+		$settings = Settings::get_settings();
+		$defaults = Settings::get_default_settings();
+		$enabled = false;
+		if ( isset( $settings['show_on_non_singular'] ) ) {
+			$enabled = (bool) $settings['show_on_non_singular'];
+		} else {
+			$enabled = (bool) $defaults['show_on_non_singular'];
+		}
+
+		?>
+		<label for="asc-ais-show-on-non-singular">
+			<input
+				type="checkbox"
+				name="<?php echo esc_attr( Admin::OPTION_NAME . '[show_on_non_singular]' ); ?>"
+				id="asc-ais-show-on-non-singular"
+				value="1"
+				<?php checked( $enabled, true ); ?>
+			/>
+			<?php esc_html_e( 'Show summaries and excerpts on archive pages and blog listings', 'asc-ai-summaries' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'By default, summaries are only shown on singular pages (single post/page views). Enable this to also show them on archive pages, blog listings, and other non-singular views. Note: This will only show when WordPress is set to show full article content (Settings → Reading → For each article in a feed, show: Full text) for blog-style sites.', 'asc-ai-summaries' ); ?>
 		</p>
 		<?php
 	}

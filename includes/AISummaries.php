@@ -119,6 +119,7 @@ class AISummaries {
 		'post_types' => array( 'post' ),
 		'show_excerpt' => 1,
 		'show_summary' => 1,
+		'show_on_non_singular' => 0,
 		'style' => 'block',
 		'block_css' => '',
 		'block_excerpt_title' => '',

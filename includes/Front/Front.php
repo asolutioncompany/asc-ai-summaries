@@ -62,9 +62,29 @@ class Front {
 		// Get settings
 		$settings = Settings::get_settings();
 
+		// Check context: singular vs non-singular
+		$is_singular = is_singular();
+		$show_on_non_singular = ! empty( $settings['show_on_non_singular'] );
+
+		// For non-singular pages, check if enabled and if WordPress is set to show full content
+		if ( ! $is_singular ) {
+			if ( ! $show_on_non_singular ) {
+				return $content;
+			}
+			// Check WordPress option: rss_use_excerpt = 0 means "Full text", 1 means "Summary"
+			$rss_use_excerpt = get_option( 'rss_use_excerpt', 0 );
+			if ( 1 === (int) $rss_use_excerpt ) {
+				// WordPress is set to show summary, so don't show our summaries
+				return $content;
+			}
+		}
+
 		// Check if current post type is in selected post types
-		$selected_post_types = $settings['post_types'] ?? array();
-		if ( ! is_array( $selected_post_types ) || ! in_array( $post_type, $selected_post_types, true ) ) {
+		$selected_post_types = array();
+		if ( isset( $settings['post_types'] ) && is_array( $settings['post_types'] ) ) {
+			$selected_post_types = $settings['post_types'];
+		}
+		if ( empty( $selected_post_types ) || ! in_array( $post_type, $selected_post_types, true ) ) {
 			return $content;
 		}
 
@@ -231,7 +251,7 @@ class Front {
 		if ( $show_summary && ! empty( $summary ) ) {
 			$html .= "\t\t" . '<div class="asc-ais-' . esc_attr( $style ) . '-summary-wrapper"' . $hide_summary_css . '>' . "\n";
 
-			if ( ! empty( $summary_title && ! $has_tabs ) ) {
+			if ( ! empty( $summary_title ) && ! $has_tabs ) {
 				$html .= "\t\t\t" . '<div class="asc-ais-' . esc_attr( $style ) . '-summary-title">' . esc_html( $summary_title ) . '</div>' . "\n";
 			}
 
