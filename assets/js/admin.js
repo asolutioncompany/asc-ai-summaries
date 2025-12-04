@@ -36,45 +36,60 @@
 			$(targetClass).show();
 		});
 
-		/*
-		 * AI Model API keys
-		 *
-		 * Block password manager interference.
-		 *
-		 * Toggle API key visibility button.
-		 */
-		const aiModel = $('#asc-ais-ai-model');
-		const openaiApiKey = $('#asc-ais-openai-api-key');
-		const toggleApiKey = $('#asc-ais-toggle-api-key');
-		const keyField = document.getElementById('asc-ais-openai-api-key');
 
-		if (aiModel.length) {
-			// Remove readonly attribute on focus to prevent password manager interference
-			if (keyField) {
-				keyField.addEventListener('focus', function () {
-					this.removeAttribute('readonly');
-					this.type = 'text';
-				});
+	/*
+	 * Generate AI Summaries Button
+	 *
+	 * Handle the generate summaries button click.
+	 */
+	const generateButton = $('#asc-ais-generate-button');
+	const generateStatus = $('#asc-ais-generate-status');
+	const excerptField = $('#asc_ais_excerpt');
+	const summaryField = $('#asc_ais_summary');
 
-				keyField.addEventListener('blur', function () {
-					if (this.value === '') {
-						this.setAttribute('readonly', 'readonly');
-					}
-					this.type = 'password';
-				});
+	if (generateButton.length) {
+		generateButton.on('click', function () {
+			const postId = $(this).data('post-id');
+			if (!postId) {
+				return;
 			}
 
-			// Toggle API key visibility button
-			toggleApiKey.on('click', function () {
-				if (openaiApiKey.attr('type') === 'password') {
-					openaiApiKey.attr('type', 'text');
-					openaiApiKey.removeAttr('readonly');
-					$(this).text('Hide');
-				} else {
-					openaiApiKey.attr('type', 'password');
-					$(this).text('Show');
-				}
+			// Disable button and show loading
+			generateButton.prop('disabled', true);
+			generateStatus.html('<span style="color: #2271b1;">' + ascAISummaries.i18n.generating + '</span>');
+
+			// Make AJAX request
+			$.ajax({
+				url: ascAISummaries.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'asc_ais_generate_summaries',
+					nonce: ascAISummaries.nonce,
+					post_id: postId,
+				},
+				success: function (response) {
+					if (response.success) {
+						if (response.data.excerpt) {
+							excerptField.val(response.data.excerpt);
+						}
+						if (response.data.summary) {
+							summaryField.val(response.data.summary);
+						}
+						generateStatus.html('<span style="color: #00a32a;">' + ascAISummaries.i18n.success + '</span>');
+						setTimeout(function () {
+							generateStatus.html('');
+						}, 3000);
+					} else {
+						generateStatus.html('<span style="color: #d63638;">' + (response.data.message || ascAISummaries.i18n.error) + '</span>');
+					}
+					generateButton.prop('disabled', false);
+				},
+				error: function () {
+					generateStatus.html('<span style="color: #d63638;">' + ascAISummaries.i18n.error + '</span>');
+					generateButton.prop('disabled', false);
+				},
 			});
-		}
-	});
+		});
+	}
+});
 })(jQuery);
