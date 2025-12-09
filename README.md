@@ -1,6 +1,5 @@
 # aS.c AI Summaries
-
-Automatically add AI summaries to your WordPress content
+Automatically add AI summaries to your WordPress content.
 
 The aS.c AI Summaries WordPress plugin automatically generates excerpts and summaries for posts, pages, and/or custom post types. Ideal for publishers, syndicators, bloggers, and news aggregators, it helps improve SEO and gives busy readers a quick, accurate overview of your content.
 
@@ -8,7 +7,7 @@ The aS.c AI Summaries WordPress plugin automatically generates excerpts and summ
 
 This plugin is not ready for production use and is in early development.
 
-This plugin is being developed for public use as Free and Open Source Software.
+This plugin is being developed for public use as Free and Open Source Software (FOSS).
 
 Administrative options, meta panel, display of styled summaries, and shortcode implementation are completed.
 
@@ -16,15 +15,15 @@ It does not yet automatically generate AI summaries nor connect to AI models.
 
 ## Planned Features
 
-Automatically generate AI summaries for all your WordPress content and a variety of customizable styles.
+- Automatic generation of AI summaries for new content
 
-- Automatic generation for existing content
+- Automatic generation of AI summaries for existing content
 
 - Generate and edit summaries when creating or editing content
 
-- Customize AI prompting for writing style
-
 - Provides excerpts and summaries with customizable word length
+
+- Fully customize AI prompting
 
 - Select from multiple AI models or perform manual copy and paste
 
